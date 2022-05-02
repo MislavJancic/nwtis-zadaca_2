@@ -1,0 +1,56 @@
+{
+	"folders": {},
+	"connections": {
+		"hsqldb_server-180855d825d-368a20c52123c307": {
+			"provider": "generic",
+			"driver": "hsqldb_server",
+			"name": "HDBSQL - nwtis_g1 (nwtis_g1)",
+			"save-password": true,
+			"read-only": false,
+			"configuration": {
+				"host": "localhost",
+				"port": "9001",
+				"database": "nwtis_g1",
+				"url": "jdbc:hsqldb:hsql://localhost:9001/nwtis_g1",
+				"type": "dev",
+				"auth-model": "native",
+				"handlers": {}
+			},
+			"filters": [
+				{
+					"type": "org.jkiss.dbeaver.model.struct.rdb.DBSSchema",
+					"enabled": true,
+					"include": [
+						"PUBLIC"
+					]
+				}
+			]
+		},
+		"mysql8-180857895bd-40b3253912f70cb0": {
+			"provider": "mysql",
+			"driver": "mysql8",
+			"name": "MySQL - localhost",
+			"save-password": true,
+			"read-only": false,
+			"configuration": {
+				"host": "localhost",
+				"port": "3306",
+				"url": "jdbc:mysql://localhost:3306/",
+				"type": "dev",
+				"auth-model": "native",
+				"handlers": {}
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"auto-close-transactions": false
+		}
+	}
+}
