@@ -13,4 +13,8 @@
 		<welcome-file>default.jsp</welcome-file>
 		<welcome-file>default.htm</welcome-file>
 	</welcome-file-list>
+	<context-param>
+    	<param-name>konfiguracija</param-name>
+    	<param-value>NWTiS.db.config_2.xml</param-value>
+  	</context-param>
 </web-app>

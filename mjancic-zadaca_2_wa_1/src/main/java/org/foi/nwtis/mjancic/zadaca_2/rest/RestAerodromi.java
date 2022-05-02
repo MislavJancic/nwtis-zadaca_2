@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.podaci.Lokacija;
 
@@ -22,24 +23,15 @@ public class RestAerodromi {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dajSveAerodrome() {
 		Response odgovor = null;
-
-		// TODO ovo mora doći iz baze
-		List<Aerodrom> aerodromi = new ArrayList<>();
-		Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-
+		
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
+		//ra.spoji();
+		List<Aerodrom> aerodromi = ra.dohvatiSveAerodrome();
+		
 		if (aerodromi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
 		} else {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma.").build();
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema odgovora.").build();
 		}
 
 		return odgovor;

@@ -6,6 +6,7 @@ import org.foi.nwtis.mjancic.vjezba_03.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.KonfiguracijaBP;
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.PostavkeBazaPodataka;
 import org.foi.nwtis.mjancic.zadaca_2.dretve.PreuzimanjeRasporedaAerodroma;
+import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -22,23 +23,25 @@ public class SlusacAplikacije implements ServletContextListener {
 
     @Override
 	public void contextInitialized(ServletContextEvent sce) {
-//    	ServletContext context = sce.getServletContext();
-//    	String nazivDatoteke = context.getInitParameter("konfiguracija");
-//    	String putanja = context.getRealPath("/WEB-INF") + File.separator;
-//    	nazivDatoteke = putanja + nazivDatoteke;
-//    	
-//    	System.out.println(nazivDatoteke);
-//    	
-//    	KonfiguracijaBP konfig = new PostavkeBazaPodataka(nazivDatoteke);
-//    	try {
-//			konfig.ucitajKonfiguraciju();
-//		} catch (NeispravnaKonfiguracija e) {
-//			e.printStackTrace();
-//			return;
-//		}
-//    	
-//    	context.setAttribute("postavke", konfig);
-//    	System.out.println("Postavke učitane!");
+    	ServletContext context = sce.getServletContext();
+    	String nazivDatoteke = context.getInitParameter("konfiguracija");
+    	String putanja = context.getRealPath("/WEB-INF") + File.separator;
+    	nazivDatoteke = putanja + nazivDatoteke;
+    	
+    	System.out.println(nazivDatoteke);
+    	
+    	KonfiguracijaBP konfig = new PostavkeBazaPodataka(nazivDatoteke);
+    	try {
+			konfig.ucitajKonfiguraciju();
+		} catch (NeispravnaKonfiguracija e) {
+			e.printStackTrace();
+			return;
+		}
+    	
+    	context.setAttribute("postavke", konfig);
+    	RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu((PostavkeBazaPodataka) konfig);
+    	System.out.println("Postavke učitane!");
+    	boolean spojeno = ra.spoji();
     	
     	PreuzimanjeRasporedaAerodroma pra = new PreuzimanjeRasporedaAerodroma();
     	pra.start();
@@ -51,7 +54,12 @@ public class SlusacAplikacije implements ServletContextListener {
 		ServletContext context = sce.getServletContext();
 		context.removeAttribute("postavke");
 		System.out.println("Postavke obrisane!");
-		
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
+		try {
+			ra.odspoji();
+		} catch (NullPointerException e) {
+			
+		}
 		ServletContextListener.super.contextDestroyed(sce);
 	}
     
