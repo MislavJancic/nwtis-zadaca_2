@@ -8,11 +8,15 @@ import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.podaci.Lokacija;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -21,13 +25,15 @@ public class RestAerodromi {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response dajSveAerodrome() {
+	public Response dajSveAerodrome(@Context HttpServletRequest rq) {
 		Response odgovor = null;
-		
+		if (rq.getParameter("preuzimanje") != null) {
+			return dajAerodromeZaPratiti();
+		}
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		//ra.spoji();
+		// ra.spoji();
 		List<Aerodrom> aerodromi = ra.dohvatiSveAerodrome();
-		
+
 		if (aerodromi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
 		} else {
@@ -50,30 +56,24 @@ public class RestAerodromi {
 	public Response dajAerodrom(@PathParam("icao") String icao) {
 		Response odgovor = null;
 
-		// TODO ovo mora doći iz baze
-		List<Aerodrom> aerodromi = new ArrayList<>();
-		Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
-		aerodromi.add(ad);
-		ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
-		aerodromi.add(ad);
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
+		Aerodrom ad = ra.dohvatiAerodrom(icao);
 
-		for(Aerodrom a : aerodromi) {
-			if(a.getIcao().compareTo(icao) == 0) {
-				odgovor = Response.status(Response.Status.OK).entity(a).build();
-				break;
-			}
-		}
-		
+		odgovor = Response.status(Response.Status.OK).entity(ad).build();
+
 		if (odgovor == null) {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aviona: "+icao).build();
+			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma: " + icao).build();
 		}
 
+		return odgovor;
+	}
+
+	public Response dajAerodromeZaPratiti() {
+		Response odgovor = null;
+
+		if (odgovor == null) {
+			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma.").build();
+		}
 		return odgovor;
 	}
 
