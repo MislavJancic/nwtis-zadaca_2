@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.PostavkeBazaPodataka;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.OdgovorAerodrom;
+import org.foi.nwtis.rest.podaci.AvionLeti;
 import org.foi.nwtis.rest.podaci.Lokacija;
 
 public class RepozitorijAerodromi {
@@ -117,6 +119,7 @@ public class RepozitorijAerodromi {
 				}
 				aerodrom = new Aerodrom(icao, naziv, drzava, lokacija);
 			}
+			rs.close();
 			return aerodrom;
 
 		} catch (SQLException e) {
@@ -127,7 +130,7 @@ public class RepozitorijAerodromi {
 	}
 
 	public List<Aerodrom> dohvatiAerodromePracene() {
-		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, aerodromi_praceni ap WHERE a.ident=ap.ident";
+		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
 			return null;
@@ -147,12 +150,127 @@ public class RepozitorijAerodromi {
 				}
 				aerodromi.add(new Aerodrom(icao, naziv, drzava, lokacija));
 			}
+			rs.close();
 			return aerodromi;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
 			return null;
 		}
 
+	}
+
+	public boolean dodajAerodromZaPratiti(String icao) {
+		if (provjeriPostojanjeIcaoZaPratiti(icao))
+			return false;
+		String upit = "INSERT INTO AERODROMI_PRACENI (IDENT, STORED) VALUES (?, NOW())";
+		if (veza == null)
+			return false;
+		PreparedStatement s;
+		try {
+			s = veza.prepareStatement(upit);
+			s.setString(1, icao);
+			int r = s.executeUpdate();
+
+			return true ? r > 0 : false;
+
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+			return false;
+		}
+	}
+
+	private boolean provjeriPostojanjeIcaoZaPratiti(String icao) {
+		String upit = "SELECT a.IDENT FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
+		if (veza == null)
+			spoji();
+		try {
+			PreparedStatement s = veza.prepareStatement(upit);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String ident = rs.getString("ident");
+
+				if (ident.equals(icao)) {
+					rs.close();
+					return true;
+				}
+			}
+
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
+		}
+		return false;
+	}
+
+	public List<AvionLeti> dohvatiIcaoPolaske(String icao) {
+		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ICAO24 = ?";
+		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
+		if (veza == null)
+			spoji();
+		ResultSet rs = null;
+		try {
+			PreparedStatement s = veza.prepareStatement(upit);
+			s.setString(1, icao);
+			rs = s.executeQuery();
+			while (rs.next()) {
+				String icao24 = rs.getString("icao24");
+				int firstSeen = rs.getInt("firstseen");
+				String estDepartureAirport = rs.getString("estdepartureairport");
+				int lastSeen = rs.getInt("lastseen");
+				String estArrivalAirport = rs.getString("estArrivalAirport");
+				String callsign = rs.getString("callsign");
+				int estDepartureAirportHorizDistance = rs.getInt("estDepartureAirportHorizDistance");
+				int estDepartureAirportVertDistance = rs.getInt("estDepartureAirportVertDistance");
+				int estArrivalAirportHorizDistance = rs.getInt("estArrivalAirportHorizDistance");
+				int estArrivalAirportVertDistance = rs.getInt("estArrivalAirportVertDistance");
+				int departureAirportCandidatesCount = rs.getInt("departureAirportCandidatesCount");
+				int arrivalAirportCandidatesCount = rs.getInt("arrivalAirportCandidatesCount");
+				avioniLete.add(new AvionLeti(icao24, firstSeen, estDepartureAirport, lastSeen, estArrivalAirport, 
+						callsign, estDepartureAirportHorizDistance, estDepartureAirportVertDistance, 
+						estArrivalAirportHorizDistance, estArrivalAirportVertDistance, 
+						departureAirportCandidatesCount, arrivalAirportCandidatesCount));
+			}
+			rs.close();
+			return avioniLete;
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+			return null;
+		}
+	}
+	public List<AvionLeti> dohvatiIcaoDolaske(String icao){
+		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ICAO24 = ?";
+		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
+		if (veza == null)
+			spoji();
+		ResultSet rs = null;
+		try {
+			PreparedStatement s = veza.prepareStatement(upit);
+			s.setString(1, icao);
+			rs = s.executeQuery();
+			while (rs.next()) {
+				String icao24 = rs.getString("icao24");
+				int firstSeen = rs.getInt("firstseen");
+				String estDepartureAirport = rs.getString("estdepartureairport");
+				int lastSeen = rs.getInt("lastseen");
+				String estArrivalAirport = rs.getString("estArrivalAirport");
+				String callsign = rs.getString("callsign");
+				int estDepartureAirportHorizDistance = rs.getInt("estDepartureAirportHorizDistance");
+				int estDepartureAirportVertDistance = rs.getInt("estDepartureAirportVertDistance");
+				int estArrivalAirportHorizDistance = rs.getInt("estArrivalAirportHorizDistance");
+				int estArrivalAirportVertDistance = rs.getInt("estArrivalAirportVertDistance");
+				int departureAirportCandidatesCount = rs.getInt("departureAirportCandidatesCount");
+				int arrivalAirportCandidatesCount = rs.getInt("arrivalAirportCandidatesCount");
+				avioniLete.add(new AvionLeti(icao24, firstSeen, estDepartureAirport, lastSeen, estArrivalAirport, 
+						callsign, estDepartureAirportHorizDistance, estDepartureAirportVertDistance, 
+						estArrivalAirportHorizDistance, estArrivalAirportVertDistance, 
+						departureAirportCandidatesCount, arrivalAirportCandidatesCount));
+			}
+			rs.close();
+			return avioniLete;
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+			return null;
+		}
 	}
 
 }
