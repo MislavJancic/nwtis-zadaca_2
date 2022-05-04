@@ -67,7 +67,7 @@ public class RepozitorijAerodromi {
 	}
 
 	public List<Aerodrom> dohvatiSveAerodrome() {
-		String upit = "SELECT * FROM airports";
+		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
 			return null;
@@ -96,7 +96,7 @@ public class RepozitorijAerodromi {
 	}
 
 	public Aerodrom dohvatiAerodrom(String icao) {
-		String upit = "SELECT * FROM airports WHERE ident = ?";
+		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a WHERE ident = ?";
 		if (veza == null)
 			return null;
 		PreparedStatement s;
@@ -119,6 +119,35 @@ public class RepozitorijAerodromi {
 			}
 			return aerodrom;
 
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+			return null;
+		}
+
+	}
+
+	public List<Aerodrom> dohvatiAerodromePracene() {
+		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, aerodromi_praceni ap WHERE a.ident=ap.ident";
+		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
+		if (veza == null)
+			return null;
+		try {
+			PreparedStatement s = veza.prepareStatement(upit);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String icao = rs.getString("ident");
+				String naziv = rs.getString("name");
+				String drzava = rs.getString("iso_country");
+				String coordinates = rs.getString("coordinates");
+				Lokacija lokacija = null;
+				try {
+					lokacija = new Lokacija(coordinates.split(",")[0].trim(), coordinates.split(",")[1].trim());
+				} catch (ArrayIndexOutOfBoundsException e) {
+					lokacija = new Lokacija("null", "null");
+				}
+				aerodromi.add(new Aerodrom(icao, naziv, drzava, lokacija));
+			}
+			return aerodromi;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
 			return null;

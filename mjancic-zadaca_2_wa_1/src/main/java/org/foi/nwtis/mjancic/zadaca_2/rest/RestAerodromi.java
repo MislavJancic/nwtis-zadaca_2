@@ -43,6 +43,7 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	// TODO
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dodajAerodromZaPratiti(String icao) {
@@ -70,8 +71,13 @@ public class RestAerodromi {
 
 	public Response dajAerodromeZaPratiti() {
 		Response odgovor = null;
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
+		List<Aerodrom> aerodromi = ra.dohvatiAerodromePracene();
 
-		if (odgovor == null) {
+		if (aerodromi != null) {
+			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
+			
+		} else {
 			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma.").build();
 		}
 		return odgovor;
