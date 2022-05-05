@@ -16,7 +16,9 @@ import jakarta.servlet.annotation.WebListener;
 @WebListener
 public class SlusacAplikacije implements ServletContextListener {
 
-
+	String nazivDatotekeDnevnika = "";
+	long vrijemePocetkaRada;
+	long vrijemeKrajaRada;
     public SlusacAplikacije() {
        
     }
@@ -43,14 +45,16 @@ public class SlusacAplikacije implements ServletContextListener {
     	System.out.println("Postavke učitane!");
     	boolean spojeno = ra.spoji();
     	
-    	PreuzimanjeRasporedaAerodroma pra = new PreuzimanjeRasporedaAerodroma();
+    	PreuzimanjeRasporedaAerodroma pra = new PreuzimanjeRasporedaAerodroma(konfig);
     	pra.start();
-    	
+    	vrijemePocetkaRada = System.currentTimeMillis();
 		ServletContextListener.super.contextInitialized(sce);
 	}
     
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		vrijemeKrajaRada = System.currentTimeMillis();
+		//TODO pisanje u datoteku denvnika
 		ServletContext context = sce.getServletContext();
 		context.removeAttribute("postavke");
 		System.out.println("Postavke obrisane!");
