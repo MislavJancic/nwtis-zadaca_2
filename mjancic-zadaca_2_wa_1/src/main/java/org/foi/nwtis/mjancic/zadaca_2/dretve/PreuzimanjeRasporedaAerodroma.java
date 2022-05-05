@@ -26,6 +26,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 	private String korime;
 	private String lozinka;
 	private OSKlijent osKlijent;
+	private boolean radi = true;
 
 	private Konfiguracija konfig;
 
@@ -38,8 +39,8 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			Date datumOd = df.parse(datumKonfig);
 			datumKonfig = konfig.dajPostavku("preuzimanje.do");
 			Date datumDo = df.parse(datumKonfig);
-			this.preuzimanjeOd = datumOd.getTime();
-			this.preuzimanjeDo = datumDo.getTime();
+			this.preuzimanjeOd = datumOd.getTime()/1000;
+			this.preuzimanjeDo = datumDo.getTime()/1000;
 			this.preuzimanjeVrijeme = Integer.parseInt(konfig.dajPostavku("preuzimanje.vrijeme")) * 6 * 60;
 			this.vrijemePauza = Integer.parseInt(konfig.dajPostavku("preuzimanje.pauza"));
 			this.vrijemeCiklusa = Integer.parseInt(konfig.dajPostavku("ciklus.vrijeme")) * 1000;
@@ -63,8 +64,9 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 	@Override
 	public void run() {
 		List<Aerodrom> aerodromi = RepozitorijAerodromi.dohvatiInstancu().dohvatiAerodromePracene();
-
-		while (this.vrijemeObrade < this.preuzimanjeDo) {
+		System.out.println("VRIJEME OD "+this.preuzimanjeOd);
+		System.out.println("VRIJEME DO "+this.preuzimanjeDo);
+		while ((this.vrijemeObrade < this.preuzimanjeDo) && radi) {
 			for (Aerodrom a : aerodromi) {
 				obradiPolaske(a);
 				obradiDolaske(a);
@@ -88,10 +90,9 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			avioniDolasci = osKlijent.getArrivals(a.getIcao(), this.preuzimanjeOd, this.preuzimanjeDo);
 			if (avioniDolasci != null) {
 				System.out.println("Broj letova: " + avioniDolasci.size());
+				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiDolaske(avioniDolasci);
 				for (AvionLeti avion : avioniDolasci) {
-					if (avion.getEstDepartureAirport().equals("null")) {
-						// TODO spremi probleme
-					}
+					
 					System.out.println("Avion: " + avion.getIcao24() + " Odredište: " + avion.getEstDepartureAirport());
 				}
 			}
@@ -122,6 +123,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 
 	@Override
 	public void interrupt() {
+		radi = false;
 		super.interrupt();
 	}
 

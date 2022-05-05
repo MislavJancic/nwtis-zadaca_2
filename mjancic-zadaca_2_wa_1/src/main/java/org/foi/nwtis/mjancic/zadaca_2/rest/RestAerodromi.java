@@ -1,6 +1,10 @@
 package org.foi.nwtis.mjancic.zadaca_2.rest;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -99,16 +103,35 @@ public class RestAerodromi {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/polasci")
-	public Response dajPolaskeAerodoma(@PathParam("icao") String icao) {
+	public Response dajPolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan) {
 		System.out.println("ICAO POLASCI: " + icao);
+		List<AvionLeti> letovi = null;
 		Response odgovor = null;
+		DateFormat formatDatuma = new SimpleDateFormat("dd.mm.yyyy");
+		Date datum;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		List<AvionLeti> avioniPolasci = ra.dohvatiIcaoPolaske(icao);
+		if(dan!=null) {
+			
+			System.out.println("DAN "+dan);
+			try {
+				datum = formatDatuma.parse(dan);
+				letovi = ra.dohvatiIcaoPolaske(icao,datum.getTime()/1000);
+				System.out.println("USPIO PARSE");
+			} catch (ParseException e) {
+				System.out.println("EXCEPTION APRSE");
+	
+			}
+			
+		}else {
+			letovi = ra.dohvatiIcaoPolaske(icao,null);
+		}
+		
 
-		if (avioniPolasci != null) {
-			odgovor = Response.status(Response.Status.OK).entity(avioniPolasci).build();
+		if (letovi != null) {
+			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
 
 		} else {
+			System.out.println("EXCEPTION APRSE");
 			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema polazaka.").build();
 		}
 		return odgovor;
@@ -117,17 +140,34 @@ public class RestAerodromi {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/dolasci")
-	public Response dajDolaskeAerodoma(@PathParam("icao") String icao) {
+	public Response dajDolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan) {
 		System.out.println("ICAO DOLASCI: " + icao);
+		List<AvionLeti> letovi = null;
 		Response odgovor = null;
+		DateFormat formatDatuma = new SimpleDateFormat("dd.mm.yyyy");
+		Date datum;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		List<AvionLeti> avioniDolasci = ra.dohvatiIcaoDolaske(icao);
+		if(dan!=null) {
+			
+			System.out.println("DAN "+dan);
+			try {
+				datum = formatDatuma.parse(dan);
+				letovi = ra.dohvatiIcaoDolaske(icao,datum.getTime()/1000);
+				System.out.println("USPIO PARSE");
+			} catch (ParseException e) {
+				System.out.println("EXCEPTION APRSE");
+	
+			}
+			
+		}else {
+			letovi = ra.dohvatiIcaoDolaske(icao,null);
+		}
 
-		if (avioniDolasci != null) {
-			odgovor = Response.status(Response.Status.OK).entity(avioniDolasci).build();
+		if (letovi != null) {
+			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
 
 		} else {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema polazaka.").build();
+			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema dolazaka.").build();
 		}
 		return odgovor;
 	}

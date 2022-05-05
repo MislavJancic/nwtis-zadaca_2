@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.PostavkeBazaPodataka;
 import org.foi.nwtis.podaci.Aerodrom;
-import org.foi.nwtis.podaci.OdgovorAerodrom;
 import org.foi.nwtis.rest.podaci.AvionLeti;
 import org.foi.nwtis.rest.podaci.Lokacija;
 
@@ -202,15 +201,22 @@ public class RepozitorijAerodromi {
 		return false;
 	}
 
-	public List<AvionLeti> dohvatiIcaoPolaske(String icao) {
-		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ICAO24 = ?";
+	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme) {
+		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ESTDEPARTUREAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
 			spoji();
 		ResultSet rs = null;
 		try {
+			if(vrijeme != null) {
+				upit+=" AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				System.out.println("dodani upit "+vrijeme);
+			}
+			
 			PreparedStatement s = veza.prepareStatement(upit);
 			s.setString(1, icao);
+			if(vrijeme!=null)s.setLong(2, vrijeme);
+			
 			rs = s.executeQuery();
 			while (rs.next()) {
 				String icao24 = rs.getString("icao24");
@@ -238,15 +244,21 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public List<AvionLeti> dohvatiIcaoDolaske(String icao) {
-		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ICAO24 = ?";
+	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme) {
+		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
 			spoji();
 		ResultSet rs = null;
 		try {
+			if(vrijeme != null) {
+				upit+=" AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				System.out.println("dodani upit "+vrijeme);
+			}
 			PreparedStatement s = veza.prepareStatement(upit);
+			if(vrijeme!=null)s.setLong(2, vrijeme);
 			s.setString(1, icao);
+			
 			rs = s.executeQuery();
 			while (rs.next()) {
 				String icao24 = rs.getString("icao24");

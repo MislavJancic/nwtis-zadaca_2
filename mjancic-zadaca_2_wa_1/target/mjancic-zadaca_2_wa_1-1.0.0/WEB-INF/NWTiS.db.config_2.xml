@@ -21,8 +21,8 @@
 	<entry key="ciklus.korekcija">10</entry>
 	<entry key="preuzimanje.odmak">3</entry>
 	<entry key="preuzimanje.pauza">20</entry>
-	<entry key="preuzimanje.od">01.01.2022</entry>
-	<entry key="preuzimanje.do">31.12.2022</entry>
+	<entry key="preuzimanje.od">10.04.2022</entry>
+	<entry key="preuzimanje.do">20.04.2022</entry>
 	<entry key="preuzimanje.vrijeme">6</entry>
 
 </properties>
