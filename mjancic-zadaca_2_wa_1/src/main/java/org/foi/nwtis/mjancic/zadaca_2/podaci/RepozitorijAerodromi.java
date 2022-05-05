@@ -91,6 +91,7 @@ public class RepozitorijAerodromi {
 			return aerodromi;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return null;
 		}
 
@@ -123,6 +124,7 @@ public class RepozitorijAerodromi {
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return null;
 		}
 
@@ -153,6 +155,7 @@ public class RepozitorijAerodromi {
 			return aerodromi;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return null;
 		}
 
@@ -174,6 +177,7 @@ public class RepozitorijAerodromi {
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return false;
 		}
 	}
@@ -208,15 +212,16 @@ public class RepozitorijAerodromi {
 			spoji();
 		ResultSet rs = null;
 		try {
-			if(vrijeme != null) {
-				upit+=" AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
-				System.out.println("dodani upit "+vrijeme);
+			if (vrijeme != null) {
+				upit += " AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				System.out.println("dodani upit " + vrijeme);
 			}
-			
+
 			PreparedStatement s = veza.prepareStatement(upit);
 			s.setString(1, icao);
-			if(vrijeme!=null)s.setLong(2, vrijeme);
-			
+			if (vrijeme != null)
+				s.setLong(2, vrijeme);
+
 			rs = s.executeQuery();
 			while (rs.next()) {
 				String icao24 = rs.getString("icao24");
@@ -240,6 +245,7 @@ public class RepozitorijAerodromi {
 			return avioniLete;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return null;
 		}
 	}
@@ -251,14 +257,15 @@ public class RepozitorijAerodromi {
 			spoji();
 		ResultSet rs = null;
 		try {
-			if(vrijeme != null) {
-				upit+=" AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
-				System.out.println("dodani upit "+vrijeme);
+			if (vrijeme != null) {
+				upit += " AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				System.out.println("dodani upit " + vrijeme);
 			}
 			PreparedStatement s = veza.prepareStatement(upit);
-			if(vrijeme!=null)s.setLong(2, vrijeme);
+			if (vrijeme != null)
+				s.setLong(2, vrijeme);
 			s.setString(1, icao);
-			
+
 			rs = s.executeQuery();
 			while (rs.next()) {
 				String icao24 = rs.getString("icao24");
@@ -282,6 +289,7 @@ public class RepozitorijAerodromi {
 			return avioniLete;
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return null;
 		}
 	}
@@ -299,7 +307,7 @@ public class RepozitorijAerodromi {
 			int r = 0;
 			s = veza.prepareStatement(upit);
 			for (AvionLeti al : letovi) {
-				if (!al.getEstArrivalAirport().equals("null")) {
+				if (al.getEstArrivalAirport() != null) {
 					s.setString(1, al.getIcao24());
 					s.setInt(2, al.getFirstSeen());
 					s.setString(3, al.getEstDepartureAirport());
@@ -320,6 +328,7 @@ public class RepozitorijAerodromi {
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return false;
 		}
 	}
@@ -335,9 +344,10 @@ public class RepozitorijAerodromi {
 		PreparedStatement s;
 		try {
 			int r = 0;
-			s = veza.prepareStatement(upit);
+
 			for (AvionLeti al : letovi) {
-				if (!al.getEstDepartureAirport().equals("null")) {
+				if (al.getEstDepartureAirport() != null) {
+					s = veza.prepareStatement(upit);
 					s.setString(1, al.getIcao24());
 					s.setInt(2, al.getFirstSeen());
 					s.setString(3, al.getEstDepartureAirport());
@@ -358,6 +368,7 @@ public class RepozitorijAerodromi {
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return false;
 		}
 	}
@@ -377,6 +388,7 @@ public class RepozitorijAerodromi {
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
 			return false;
 		}
 	}

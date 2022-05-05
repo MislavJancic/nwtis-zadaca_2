@@ -32,7 +32,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 
 	public PreuzimanjeRasporedaAerodroma(Konfiguracija konfig) {
 		this.konfig = konfig;
-		DateFormat df = new SimpleDateFormat("dd.mm.yyyy");
+		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 		try {
 			String datumKonfig = konfig.dajPostavku("preuzimanje.od");
@@ -41,10 +41,22 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			Date datumDo = df.parse(datumKonfig);
 			this.preuzimanjeOd = datumOd.getTime()/1000;
 			this.preuzimanjeDo = datumDo.getTime()/1000;
+			//this.preuzimanjeOd = 1648764000;
+			//this.preuzimanjeDo = 1648850400;
 			this.preuzimanjeVrijeme = Integer.parseInt(konfig.dajPostavku("preuzimanje.vrijeme")) * 6 * 60;
 			this.vrijemePauza = Integer.parseInt(konfig.dajPostavku("preuzimanje.pauza"));
 			this.vrijemeCiklusa = Integer.parseInt(konfig.dajPostavku("ciklus.vrijeme")) * 1000;
 			this.ciklusKorekcija = Integer.parseInt(konfig.dajPostavku("ciklus.korekcija"));
+			this.korime = konfig.dajPostavku("OpenSkyNetwork.korisnik");
+			this.lozinka = konfig.dajPostavku("OpenSkyNetwork.lozinka");
+			
+			System.out.println("VRIJEME OD "+preuzimanjeOd);
+			System.out.println("VRIJEME DO "+preuzimanjeDo);
+			System.out.println("USERNAME "+korime);
+			System.out.println("LOZINKA "+lozinka);
+			//System.out.println("DATUM "+datumOd.toLocaleString());
+			
+			
 
 		} catch (ParseException | NullPointerException e) {
 			// TODO Auto-generated catch block
@@ -57,7 +69,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 	public synchronized void start() {
 		this.vrijemeObrade = this.preuzimanjeOd;
 		this.osKlijent = new OSKlijent(korime, lozinka);
-
+		
 		super.start();
 	}
 
@@ -87,7 +99,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 		System.out.println("Dolasci na aerodrom: " + a.getIcao());
 		List<AvionLeti> avioniDolasci;
 		try {
-			avioniDolasci = osKlijent.getArrivals(a.getIcao(), this.preuzimanjeOd, this.preuzimanjeDo);
+			avioniDolasci = osKlijent.getArrivals(a.getIcao().trim(), this.preuzimanjeOd, this.preuzimanjeDo);
 			if (avioniDolasci != null) {
 				System.out.println("Broj letova: " + avioniDolasci.size());
 				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiDolaske(avioniDolasci);
