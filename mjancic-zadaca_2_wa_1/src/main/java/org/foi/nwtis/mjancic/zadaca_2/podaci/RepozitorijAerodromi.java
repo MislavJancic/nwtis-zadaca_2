@@ -287,19 +287,21 @@ public class RepozitorijAerodromi {
 			int r = 0;
 			s = veza.prepareStatement(upit);
 			for (AvionLeti al : letovi) {
-				s.setString(1, al.getIcao24());
-				s.setInt(2, al.getFirstSeen());
-				s.setString(3, al.getEstDepartureAirport());
-				s.setInt(4, al.getLastSeen());
-				s.setString(5, al.getEstArrivalAirport());
-				s.setString(6, al.getCallsign());
-				s.setInt(7, al.getEstDepartureAirportHorizDistance());
-				s.setInt(8, al.getEstDepartureAirportVertDistance());
-				s.setInt(9, al.getEstArrivalAirportHorizDistance());
-				s.setInt(10, al.getEstArrivalAirportVertDistance());
-				s.setInt(11, al.getDepartureAirportCandidatesCount());
-				s.setInt(12, al.getArrivalAirportCandidatesCount());
-				r = s.executeUpdate();
+				if (!al.getEstArrivalAirport().equals("null")) {
+					s.setString(1, al.getIcao24());
+					s.setInt(2, al.getFirstSeen());
+					s.setString(3, al.getEstDepartureAirport());
+					s.setInt(4, al.getLastSeen());
+					s.setString(5, al.getEstArrivalAirport());
+					s.setString(6, al.getCallsign());
+					s.setInt(7, al.getEstDepartureAirportHorizDistance());
+					s.setInt(8, al.getEstDepartureAirportVertDistance());
+					s.setInt(9, al.getEstArrivalAirportHorizDistance());
+					s.setInt(10, al.getEstArrivalAirportVertDistance());
+					s.setInt(11, al.getDepartureAirportCandidatesCount());
+					s.setInt(12, al.getArrivalAirportCandidatesCount());
+					r = s.executeUpdate();
+				}
 			}
 
 			return true ? r > 0 : false;
@@ -323,19 +325,21 @@ public class RepozitorijAerodromi {
 			int r = 0;
 			s = veza.prepareStatement(upit);
 			for (AvionLeti al : letovi) {
-				s.setString(1, al.getIcao24());
-				s.setInt(2, al.getFirstSeen());
-				s.setString(3, al.getEstDepartureAirport());
-				s.setInt(4, al.getLastSeen());
-				s.setString(5, al.getEstArrivalAirport());
-				s.setString(6, al.getCallsign());
-				s.setInt(7, al.getEstDepartureAirportHorizDistance());
-				s.setInt(8, al.getEstDepartureAirportVertDistance());
-				s.setInt(9, al.getEstArrivalAirportHorizDistance());
-				s.setInt(10, al.getEstArrivalAirportVertDistance());
-				s.setInt(11, al.getDepartureAirportCandidatesCount());
-				s.setInt(12, al.getArrivalAirportCandidatesCount());
-				r = s.executeUpdate();
+				if (!al.getEstDepartureAirport().equals("null")) {
+					s.setString(1, al.getIcao24());
+					s.setInt(2, al.getFirstSeen());
+					s.setString(3, al.getEstDepartureAirport());
+					s.setInt(4, al.getLastSeen());
+					s.setString(5, al.getEstArrivalAirport());
+					s.setString(6, al.getCallsign());
+					s.setInt(7, al.getEstDepartureAirportHorizDistance());
+					s.setInt(8, al.getEstDepartureAirportVertDistance());
+					s.setInt(9, al.getEstArrivalAirportHorizDistance());
+					s.setInt(10, al.getEstArrivalAirportVertDistance());
+					s.setInt(11, al.getDepartureAirportCandidatesCount());
+					s.setInt(12, al.getArrivalAirportCandidatesCount());
+					r = s.executeUpdate();
+				}
 			}
 
 			return true ? r > 0 : false;
