@@ -95,7 +95,7 @@ public class RestAerodromi {
 		odgovor = Response.status(Response.Status.OK).entity(ad).build();
 
 		if (odgovor == null) {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma: " + icao).build();
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema aerodroma: " + icao).build();
 		}
 		try {
 			veza.close();
@@ -115,7 +115,7 @@ public class RestAerodromi {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
 
 		} else {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema aerodroma.").build();
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema aerodroma.").build();
 		}
 		try {
 			veza.close();
@@ -158,7 +158,7 @@ public class RestAerodromi {
 
 		} else {
 			System.out.println("EXCEPTION APRSE");
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema polazaka.").build();
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema polazaka.").build();
 		}
 		try {
 			veza.close();
@@ -199,7 +199,7 @@ public class RestAerodromi {
 			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
 
 		} else {
-			odgovor = Response.status(Response.Status.NOT_FOUND).entity("Nema dolazaka.").build();
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema dolazaka.").build();
 		}
 		try {
 			veza.close();

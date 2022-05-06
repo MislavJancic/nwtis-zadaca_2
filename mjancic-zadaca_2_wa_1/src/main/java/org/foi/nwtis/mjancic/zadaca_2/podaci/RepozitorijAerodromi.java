@@ -195,7 +195,7 @@ public class RepozitorijAerodromi {
 		return false;
 	}
 
-	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza) {
+	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza/*, int limit, int offset*/) {
 		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ESTDEPARTUREAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
@@ -206,13 +206,19 @@ public class RepozitorijAerodromi {
 				upit += " AND ap.FIRSTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
-
+			//upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
-			s.setString(1, icao);
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
+				
+//				s.setInt(4, limit);
+//				s.setInt(5, offset);
+//			} else {
+//				s.setInt(2, limit);
+//				s.setInt(3, offset);
 			}
+			s.setString(1, icao);
 				
 
 			rs = s.executeQuery();
@@ -243,8 +249,8 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza) {
-		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ?";
+	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza/*, int limit, int offset*/) {
+		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ? ";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
 			return null;
@@ -254,10 +260,17 @@ public class RepozitorijAerodromi {
 				upit += " AND ad.LASTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
+			//upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
+				
+//				s.setInt(4, limit);
+//				s.setInt(5, offset);
+//			} else {
+//				s.setInt(2, limit);
+//				s.setInt(3, offset);
 			}
 			s.setString(1, icao);
 

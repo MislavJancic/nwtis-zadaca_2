@@ -21,23 +21,23 @@ public class SlusacAplikacije implements ServletContextListener {
 
     @Override
 	public void contextInitialized(ServletContextEvent sce) {
-//    	ServletContext context = sce.getServletContext();
-//    	String nazivDatoteke = context.getInitParameter("konfiguracija");
-//    	String putanja = context.getRealPath("/WEB-INF") + File.separator;
-//    	nazivDatoteke = putanja + nazivDatoteke;
-//    	
-//    	System.out.println(nazivDatoteke);
-//    	
-//    	KonfiguracijaBP konfig = new PostavkeBazaPodataka(nazivDatoteke);
-//    	try {
-//			konfig.ucitajKonfiguraciju();
-//		} catch (NeispravnaKonfiguracija e) {
-//			e.printStackTrace();
-//			return;
-//		}
-//    	
-//    	context.setAttribute("postavke", konfig);
-//    	System.out.println("Postavke učitane!");
+    	ServletContext context = sce.getServletContext();
+    	String nazivDatoteke = context.getInitParameter("konfiguracija");
+    	String putanja = context.getRealPath("/WEB-INF") + File.separator;
+    	nazivDatoteke = putanja + nazivDatoteke;
+    	
+    	System.out.println(nazivDatoteke);
+    	
+    	KonfiguracijaBP konfig = new PostavkeBazaPodataka(nazivDatoteke);
+    	try {
+			konfig.ucitajKonfiguraciju();
+		} catch (NeispravnaKonfiguracija e) {
+			e.printStackTrace();
+			return;
+		}
+    	
+    	context.setAttribute("postavke", konfig);
+    	System.out.println("Postavke učitane!");
     	
   
     	
