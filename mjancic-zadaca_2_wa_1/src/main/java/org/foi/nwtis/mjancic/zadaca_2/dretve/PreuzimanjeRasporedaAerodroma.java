@@ -1,5 +1,7 @@
 package org.foi.nwtis.mjancic.zadaca_2.dretve;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,11 +29,13 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 	private String lozinka;
 	private OSKlijent osKlijent;
 	private boolean radi = true;
+	private Connection veza = null;
 
 	private Konfiguracija konfig;
 
 	public PreuzimanjeRasporedaAerodroma(Konfiguracija konfig) {
 		this.konfig = konfig;
+		veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 		try {
@@ -75,7 +79,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 
 	@Override
 	public void run() {
-		List<Aerodrom> aerodromi = RepozitorijAerodromi.dohvatiInstancu().dohvatiAerodromePracene();
+		List<Aerodrom> aerodromi = RepozitorijAerodromi.dohvatiInstancu().dohvatiAerodromePracene(veza);
 		System.out.println("VRIJEME OD "+this.preuzimanjeOd);
 		System.out.println("VRIJEME DO "+this.preuzimanjeDo);
 		while ((this.vrijemeObrade < this.preuzimanjeDo) && radi) {
@@ -102,7 +106,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			avioniDolasci = osKlijent.getArrivals(a.getIcao().trim(), this.preuzimanjeOd, this.preuzimanjeDo);
 			if (avioniDolasci != null) {
 				System.out.println("Broj letova: " + avioniDolasci.size());
-				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiDolaske(avioniDolasci);
+				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiDolaske(avioniDolasci,veza);
 				for (AvionLeti avion : avioniDolasci) {
 					
 					System.out.println("Avion: " + avion.getIcao24() + " Odredište: " + avion.getEstDepartureAirport());
@@ -110,7 +114,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			}
 		} catch (NwtisRestIznimka e) {
 			Problem problem = new Problem(a.getIcao(),e.getMessage());
-			RepozitorijAerodromi.dohvatiInstancu().spremiProblem(problem);
+			RepozitorijAerodromi.dohvatiInstancu().spremiProblem(problem,veza);
 		}
 	}
 
@@ -121,20 +125,25 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			avioniPolasci = osKlijent.getDepartures(a.getIcao(), this.preuzimanjeOd, this.preuzimanjeDo);
 			if (avioniPolasci != null) {
 				System.out.println("Broj letova: " + avioniPolasci.size());
-				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiPolaske(avioniPolasci);
+				boolean uspjeh = RepozitorijAerodromi.dohvatiInstancu().spremiPolaske(avioniPolasci,veza);
 				for (AvionLeti avion : avioniPolasci) {
 					System.out.println("Avion: " + avion.getIcao24() + " Odredište: " + avion.getEstArrivalAirport());
 				}
 			}
 		} catch (NwtisRestIznimka e) {
 			Problem problem = new Problem(a.getIcao(),e.getMessage());
-			RepozitorijAerodromi.dohvatiInstancu().spremiProblem(problem);
+			RepozitorijAerodromi.dohvatiInstancu().spremiProblem(problem,veza);
 			
 		}
 	}
 
 	@Override
 	public void interrupt() {
+		try {
+			veza.close();
+		} catch (SQLException e) {
+			
+		}
 		radi = false;
 		super.interrupt();
 	}

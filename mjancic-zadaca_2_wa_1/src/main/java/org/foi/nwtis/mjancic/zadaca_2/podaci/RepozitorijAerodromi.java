@@ -23,7 +23,6 @@ public class RepozitorijAerodromi {
 	private String url = null;
 	private String username = null;
 	private String lozinka = null;
-	private Connection veza = null;
 
 	private RepozitorijAerodromi(PostavkeBazaPodataka postavkeBazaPodataka) {
 		pbp = postavkeBazaPodataka;
@@ -49,25 +48,16 @@ public class RepozitorijAerodromi {
 		return instanca;
 	}
 
-	public boolean spoji() {
+	public Connection spoji() {
 		try {
-			veza = DriverManager.getConnection(url, username, lozinka);
-			return true;
+			Connection veza = DriverManager.getConnection(url, username, lozinka);
+			return veza;
 		} catch (SQLException e) {
-			return false;
+			return null;
 		}
 	}
 
-	public boolean odspoji() {
-		try {
-			veza.close();
-			return true;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
-
-	public List<Aerodrom> dohvatiSveAerodrome() {
+	public List<Aerodrom> dohvatiSveAerodrome(Connection veza) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
@@ -97,7 +87,7 @@ public class RepozitorijAerodromi {
 
 	}
 
-	public Aerodrom dohvatiAerodrom(String icao) {
+	public Aerodrom dohvatiAerodrom(String icao, Connection veza) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a WHERE ident = ?";
 		if (veza == null)
 			return null;
@@ -130,7 +120,7 @@ public class RepozitorijAerodromi {
 
 	}
 
-	public List<Aerodrom> dohvatiAerodromePracene() {
+	public List<Aerodrom> dohvatiAerodromePracene(Connection veza) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
@@ -161,8 +151,8 @@ public class RepozitorijAerodromi {
 
 	}
 
-	public boolean dodajAerodromZaPratiti(String icao) {
-		if (provjeriPostojanjeIcaoZaPratiti(icao))
+	public boolean dodajAerodromZaPratiti(String icao, Connection veza) {
+		if (provjeriPostojanjeIcaoZaPratiti(icao, veza))
 			return false;
 		String upit = "INSERT INTO AERODROMI_PRACENI (IDENT, STORED) VALUES (?, NOW())";
 		if (veza == null)
@@ -182,10 +172,10 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	private boolean provjeriPostojanjeIcaoZaPratiti(String icao) {
+	private boolean provjeriPostojanjeIcaoZaPratiti(String icao, Connection veza) {
 		String upit = "SELECT a.IDENT FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		if (veza == null)
-			spoji();
+			return false;
 		try {
 			PreparedStatement s = veza.prepareStatement(upit);
 			ResultSet rs = s.executeQuery();
@@ -205,11 +195,11 @@ public class RepozitorijAerodromi {
 		return false;
 	}
 
-	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme) {
+	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza) {
 		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ESTDEPARTUREAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
-			spoji();
+			return null;
 		ResultSet rs = null;
 		try {
 			if (vrijeme != null) {
@@ -250,15 +240,15 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme) {
+	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza) {
 		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
-			spoji();
+			return null;
 		ResultSet rs = null;
 		try {
 			if (vrijeme != null) {
-				upit += " AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				upit += " AND ?*1000 BETWEEN ad.LASTSEEN*1000 AND ad.LASTTSEEN*1000+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
 			PreparedStatement s = veza.prepareStatement(upit);
@@ -294,20 +284,22 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public boolean spremiPolaske(List<AvionLeti> letovi) {
+	public boolean spremiPolaske(List<AvionLeti> letovi, Connection veza) {
 		String upit = "INSERT  INTO AERODROMI_POLASCI (\n" + "ICAO24 ,\n" + "FIRSTSEEN,\n" + "ESTDEPARTUREAIRPORT,\n"
 				+ "LASTSEEN,\n" + "ESTARRIVALAIRPORT,\n" + "CALLSIGN,\n" + "ESTDEPARTUREAIRPORTHORIZDISTANCE,\n"
 				+ "ESTDEPARTUREAIRPORTVERTDISTANCE,\n" + "ESTARRIVALAIRPORTHORIZDISTANCE,\n"
 				+ "ESTARRIVALAIRPORTVERTDISTANCE,\n" + "DEPARTUREAIRPORTCANDIDATESCOUNT,\n"
 				+ "ARRIVALAIRPORTCANDIDATESCOUNT,\n" + "STORED \n" + ") VALUES\n" + "(?,?,?,?,?,?,?,?,?,?,?,?,NOW());";
 		if (veza == null)
-			spoji();
+			return false;
 		PreparedStatement s;
-		try {
-			int r = 0;
-			s = veza.prepareStatement(upit);
-			for (AvionLeti al : letovi) {
+
+		int r = 0;
+
+		for (AvionLeti al : letovi) {
+			try {
 				if (al.getEstArrivalAirport() != null) {
+					s = veza.prepareStatement(upit);
 					s.setString(1, al.getIcao24());
 					s.setInt(2, al.getFirstSeen());
 					s.setString(3, al.getEstDepartureAirport());
@@ -322,30 +314,29 @@ public class RepozitorijAerodromi {
 					s.setInt(12, al.getArrivalAirportCandidatesCount());
 					r = s.executeUpdate();
 				}
+			} catch (SQLException e) {
+				Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
 			}
-
-			return true ? r > 0 : false;
-
-		} catch (SQLException e) {
-			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
-
-			return false;
 		}
+
+		return true ? r > 0 : false;
+
 	}
 
-	public boolean spremiDolaske(List<AvionLeti> letovi) {
+	public boolean spremiDolaske(List<AvionLeti> letovi, Connection veza) {
 		String upit = "INSERT INTO AERODROMI_DOLASCI (\n" + "ICAO24,\n" + "FIRSTSEEN,\n" + "ESTDEPARTUREAIRPORT,\n"
 				+ "LASTSEEN,\n" + "ESTARRIVALAIRPORT,\n" + "CALLSIGN,\n" + "ESTDEPARTUREAIRPORTHORIZDISTANCE,\n"
 				+ "ESTDEPARTUREAIRPORTVERTDISTANCE,\n" + "ESTARRIVALAIRPORTHORIZDISTANCE,\n"
 				+ "ESTARRIVALAIRPORTVERTDISTANCE,\n" + "DEPARTUREAIRPORTCANDIDATESCOUNT,\n"
 				+ "ARRIVALAIRPORTCANDIDATESCOUNT,\n" + "STORED\n" + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,NOW())";
 		if (veza == null)
-			spoji();
+			return false;
 		PreparedStatement s;
-		try {
-			int r = 0;
 
-			for (AvionLeti al : letovi) {
+		int r = 0;
+
+		for (AvionLeti al : letovi) {
+			try {
 				if (al.getEstDepartureAirport() != null) {
 					s = veza.prepareStatement(upit);
 					s.setString(1, al.getIcao24());
@@ -362,21 +353,19 @@ public class RepozitorijAerodromi {
 					s.setInt(12, al.getArrivalAirportCandidatesCount());
 					r = s.executeUpdate();
 				}
+			} catch (SQLException e) {
+				Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
 			}
-
-			return true ? r > 0 : false;
-
-		} catch (SQLException e) {
-			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
-
-			return false;
 		}
+
+		return true ? r > 0 : false;
+
 	}
 
-	public boolean spremiProblem(Problem problem) {
+	public boolean spremiProblem(Problem problem, Connection veza) {
 		String upit = "INSERT INTO AERODROMI_PROBLEMI (IDENT,DESCRIPTION , STORED) VALUES (?,? ,NOW())";
 		if (veza == null)
-			spoji();
+			return false;
 		PreparedStatement s;
 		try {
 			s = veza.prepareStatement(upit);

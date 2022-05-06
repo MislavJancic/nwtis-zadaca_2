@@ -43,7 +43,6 @@ public class SlusacAplikacije implements ServletContextListener {
     	context.setAttribute("postavke", konfig);
     	RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu((PostavkeBazaPodataka) konfig);
     	System.out.println("Postavke učitane!");
-    	boolean spojeno = ra.spoji();
     	
     	PreuzimanjeRasporedaAerodroma pra = new PreuzimanjeRasporedaAerodroma(konfig);
     	pra.start();
@@ -60,7 +59,7 @@ public class SlusacAplikacije implements ServletContextListener {
 		System.out.println("Postavke obrisane!");
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
 		try {
-			ra.odspoji();
+			//ra.odspoji();
 		} catch (NullPointerException e) {
 			
 		}
