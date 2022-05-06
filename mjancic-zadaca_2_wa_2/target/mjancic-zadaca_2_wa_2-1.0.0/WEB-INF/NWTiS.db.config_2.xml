@@ -12,6 +12,6 @@
 	<entry key="jdbc.mysql">com.mysql.cj.jdbc.Driver</entry>
 	<entry key="jdbc.derby">org.apache.derby.jdbc.ClientDriver</entry>
 	<entry key="jdbc.hsqldb.hsql">org.hsqldb.jdbcDriver</entry>
-	<entry key="adresa.wa_1">http://localhost:8080/{LDAP_korisničko_ime}/api</entry>
+	<entry key="adresa.wa_1">http://localhost:8080/mjancic-zadaca_2_wa_1/api</entry>
 	<entry key="stranica.brojRedova">300</entry>
 </properties>
