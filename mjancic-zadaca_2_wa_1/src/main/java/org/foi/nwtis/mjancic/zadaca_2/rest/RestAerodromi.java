@@ -51,8 +51,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-			
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}
@@ -75,8 +75,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-			
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}
@@ -98,8 +98,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-			
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}
@@ -118,8 +118,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-	
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}
@@ -161,8 +161,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-		
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}
@@ -202,8 +202,8 @@ public class RestAerodromi {
 		}
 		try {
 			veza.close();
-		} catch (SQLException e) {
-			
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
 		}
 		return odgovor;
 	}

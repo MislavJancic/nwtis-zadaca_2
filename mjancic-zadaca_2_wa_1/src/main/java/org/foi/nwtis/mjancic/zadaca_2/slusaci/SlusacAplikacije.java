@@ -7,6 +7,7 @@ import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.KonfiguracijaB
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.PostavkeBazaPodataka;
 import org.foi.nwtis.mjancic.zadaca_2.dretve.PreuzimanjeRasporedaAerodroma;
 import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
+import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijProblemi;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -42,6 +43,7 @@ public class SlusacAplikacije implements ServletContextListener {
     	
     	context.setAttribute("postavke", konfig);
     	RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu((PostavkeBazaPodataka) konfig);
+    	RepozitorijProblemi rp = RepozitorijProblemi.dohvatiInstancu((PostavkeBazaPodataka)konfig);
     	System.out.println("Postavke učitane!");
     	
     	PreuzimanjeRasporedaAerodroma pra = new PreuzimanjeRasporedaAerodroma(konfig);

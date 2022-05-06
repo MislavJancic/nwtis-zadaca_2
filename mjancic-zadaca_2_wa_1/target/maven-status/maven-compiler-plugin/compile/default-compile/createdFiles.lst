@@ -2,6 +2,8 @@ org/foi/nwtis/mjancic/zadaca_2/podaci/Problem.class
 org/foi/nwtis/mjancic/zadaca_2/rest/RestAerodromi.class
 org/foi/nwtis/mjancic/zadaca_2/dretve/PreuzimanjeRasporedaAerodroma.class
 org/foi/nwtis/mjancic/zadaca_2/podaci/RepozitorijAerodromi.class
+org/foi/nwtis/mjancic/zadaca_2/podaci/PoolVeza.class
+org/foi/nwtis/mjancic/zadaca_2/podaci/RepozitorijProblemi.class
 org/foi/nwtis/mjancic/zadaca_2/rest/RestServis.class
 org/foi/nwtis/mjancic/zadaca_2/slusaci/SlusacAplikacije.class
 org/foi/nwtis/mjancic/zadaca_2/rest/RestProblemi.class

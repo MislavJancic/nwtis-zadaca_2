@@ -203,14 +203,17 @@ public class RepozitorijAerodromi {
 		ResultSet rs = null;
 		try {
 			if (vrijeme != null) {
-				upit += " AND ?*1000 BETWEEN ap.FIRSTSEEN*1000 AND ap.FIRSTSEEN*1000+86400";
+				upit += " AND ap.FIRSTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
 
 			PreparedStatement s = veza.prepareStatement(upit);
 			s.setString(1, icao);
-			if (vrijeme != null)
+			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
+				s.setLong(3, vrijeme);
+			}
+				
 
 			rs = s.executeQuery();
 			while (rs.next()) {
@@ -248,12 +251,14 @@ public class RepozitorijAerodromi {
 		ResultSet rs = null;
 		try {
 			if (vrijeme != null) {
-				upit += " AND ?*1000 BETWEEN ad.LASTSEEN*1000 AND ad.LASTTSEEN*1000+86400";
+				upit += " AND ad.LASTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
 			PreparedStatement s = veza.prepareStatement(upit);
-			if (vrijeme != null)
+			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
+				s.setLong(3, vrijeme);
+			}
 			s.setString(1, icao);
 
 			rs = s.executeQuery();
