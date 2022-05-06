@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.foi.nwtis.mjancic.zadaca_2.podaci.JsonIcao;
 import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.podaci.AvionLeti;
@@ -60,14 +61,14 @@ public class RestAerodromi {
 	// TODO
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	// @Consumes({ MediaType.APPLICATION_JSON })
-	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
-	public Response dodajAerodromZaPratiti(@FormParam("icao") String icao) {
+	@Consumes({ MediaType.APPLICATION_JSON })
+	//@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
+	public Response dodajAerodromZaPratiti(JsonIcao icao) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
-		System.out.println("ICAO ZA DODATI JE: " + icao);
+		System.out.println("ICAO ZA DODATI JE: " + icao.icao);
 		Response odgovor = null;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		boolean uspjeh = ra.dodajAerodromZaPratiti(icao,veza);
+		boolean uspjeh = ra.dodajAerodromZaPratiti(icao.icao,veza);
 		if (uspjeh) {
 			odgovor = Response.status(Response.Status.OK).entity("Uspjeh.").build();
 		} else {

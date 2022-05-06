@@ -7,3 +7,4 @@ org/foi/nwtis/mjancic/zadaca_2/podaci/RepozitorijProblemi.class
 org/foi/nwtis/mjancic/zadaca_2/rest/RestServis.class
 org/foi/nwtis/mjancic/zadaca_2/slusaci/SlusacAplikacije.class
 org/foi/nwtis/mjancic/zadaca_2/rest/RestProblemi.class
+org/foi/nwtis/mjancic/zadaca_2/podaci/JsonIcao.class

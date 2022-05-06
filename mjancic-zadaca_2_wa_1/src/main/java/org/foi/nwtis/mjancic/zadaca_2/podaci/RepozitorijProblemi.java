@@ -80,4 +80,48 @@ public class RepozitorijProblemi {
 			return null;
 		}
 	}
+
+	public int obrisiProblemeZaIcao(String icao, Connection veza) {
+		String upit = "DELETE FROM PUBLIC.PUBLIC.AERODROMI_PROBLEMI WHERE IDENT  =  ?";
+		if (veza == null)
+			return -1;
+		PreparedStatement s;
+		try {
+			s = veza.prepareStatement(upit);
+			s.setString(1, icao);
+	
+			int r = s.executeUpdate();
+
+			return r;
+
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
+			return -1;
+		}
+	}
+
+	public List<Problem> dohvatiProbleme(String icao, Connection veza) {
+		String upit = "SELECT * FROM AERODROMI_PROBLEMI";
+		List<Problem> problemi = new ArrayList<Problem>();
+		if (veza == null)
+			return null;
+		try {
+			PreparedStatement s = veza.prepareStatement(upit);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String ident = rs.getString("ident");
+				String description = rs.getString("description");
+				Timestamp stored= rs.getTimestamp("stored");
+				
+				problemi.add(new Problem(ident, description, stored));
+			}
+			rs.close();
+			return problemi;
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
+			return null;
+		}
+	}
 }
