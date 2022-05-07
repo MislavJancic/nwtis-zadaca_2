@@ -13,7 +13,7 @@
 		href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pocetak">
 		Početna </a>
 	<br>
-	<input type="text" id="icao" name="icao" />
+	
 	<table>
 		<tr>
 			<th>ICAO</th>

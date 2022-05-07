@@ -79,7 +79,7 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 
 	@Override
 	public void run() {
-		List<Aerodrom> aerodromi = RepozitorijAerodromi.dohvatiInstancu().dohvatiAerodromePracene(veza);
+		List<Aerodrom> aerodromi = RepozitorijAerodromi.dohvatiInstancu().dohvatiSveAerodromePracene(veza);
 		System.out.println("VRIJEME OD "+this.preuzimanjeOd);
 		System.out.println("VRIJEME DO "+this.preuzimanjeDo);
 		while ((this.vrijemeObrade < this.preuzimanjeDo) && radi) {

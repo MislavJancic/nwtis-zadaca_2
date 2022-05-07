@@ -35,15 +35,24 @@ public class RestAerodromi {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response dajSveAerodrome(@Context HttpServletRequest rq) {
+	public Response dajSveAerodrome(@Context HttpServletRequest rq, @QueryParam("str") String str,
+			@QueryParam("br") String br) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		Response odgovor = null;
+
+		int brojStranice = 0;
+		int limit = 0;
+		if (str != null && br != null) {
+			brojStranice = Integer.parseInt(str);
+			limit = Integer.parseInt(br);
+		}
 		if (rq.getParameter("preuzimanje") != null) {
-			return dajAerodromeZaPratiti();
+			return dajAerodromeZaPratiti(brojStranice, limit);
 		}
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
 		// ra.spoji();
-		List<Aerodrom> aerodromi = ra.dohvatiSveAerodrome(veza);
+		System.out.println("LIMIT " + limit + " OFFSET " + brojStranice * limit);
+		List<Aerodrom> aerodromi = ra.dohvatiSveAerodrome(veza, limit, brojStranice * limit);
 
 		if (aerodromi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
@@ -58,17 +67,15 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
-	// TODO
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
-	//@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
 	public Response dodajAerodromZaPratiti(JsonIcao icao) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		System.out.println("ICAO ZA DODATI JE: " + icao.icao);
 		Response odgovor = null;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		boolean uspjeh = ra.dodajAerodromZaPratiti(icao.icao,veza);
+		boolean uspjeh = ra.dodajAerodromZaPratiti(icao.icao, veza);
 		if (uspjeh) {
 			odgovor = Response.status(Response.Status.OK).entity("Uspjeh.").build();
 		} else {
@@ -90,7 +97,7 @@ public class RestAerodromi {
 		Response odgovor = null;
 
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		Aerodrom ad = ra.dohvatiAerodrom(icao,veza);
+		Aerodrom ad = ra.dohvatiAerodrom(icao, veza);
 
 		odgovor = Response.status(Response.Status.OK).entity(ad).build();
 
@@ -105,11 +112,11 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
-	public Response dajAerodromeZaPratiti() {
+	public Response dajAerodromeZaPratiti(int brojStranice, int limit) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		Response odgovor = null;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		List<Aerodrom> aerodromi = ra.dohvatiAerodromePracene(veza);
+		List<Aerodrom> aerodromi = ra.dohvatiAerodromePracene(veza, limit, brojStranice * limit);
 
 		if (aerodromi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
@@ -128,30 +135,36 @@ public class RestAerodromi {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/polasci")
-	public Response dajPolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan) {
+	public Response dajPolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan,
+			@QueryParam("str") String str, @QueryParam("br") String br) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
+		int brojStranice = 0;
+		int limit = 0;
+		if (str != null && br != null) {
+			brojStranice = Integer.parseInt(str);
+			limit = Integer.parseInt(br);
+		}
 		System.out.println("ICAO POLASCI: " + icao);
 		List<AvionLeti> letovi = null;
 		Response odgovor = null;
 		DateFormat formatDatuma = new SimpleDateFormat("dd.MM.yyyy");
 		Date datum;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		if(dan!=null) {
-			
-			System.out.println("DAN "+dan);
+		if (dan != null) {
+
+			System.out.println("DAN " + dan);
 			try {
 				datum = formatDatuma.parse(dan);
-				letovi = ra.dohvatiIcaoPolaske(icao,datum.getTime()/1000,veza);
+				letovi = ra.dohvatiIcaoPolaske(icao, datum.getTime() / 1000, veza, limit, brojStranice * limit);
 				System.out.println("USPIO PARSE");
 			} catch (ParseException e) {
 				System.out.println("EXCEPTION APRSE");
-	
+
 			}
-			
-		}else {
-			letovi = ra.dohvatiIcaoPolaske(icao,null,veza);
+
+		} else {
+			letovi = ra.dohvatiIcaoPolaske(icao, null, veza);
 		}
-		
 
 		if (letovi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
@@ -171,28 +184,35 @@ public class RestAerodromi {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/dolasci")
-	public Response dajDolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan) {
+	public Response dajDolaskeAerodoma(@PathParam("icao") String icao, @QueryParam("dan") String dan,
+			@QueryParam("str") String str, @QueryParam("br") String br) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
+		int brojStranice = 0;
+		int limit = 0;
+		if (str != null && br != null) {
+			brojStranice = Integer.parseInt(str);
+			limit = Integer.parseInt(br);
+		}
 		System.out.println("ICAO DOLASCI: " + icao);
 		List<AvionLeti> letovi = null;
 		Response odgovor = null;
 		DateFormat formatDatuma = new SimpleDateFormat("dd.MM.yyyy");
 		Date datum;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		if(dan!=null) {
-			
-			System.out.println("DAN "+dan);
+		if (dan != null) {
+
+			System.out.println("DAN " + dan);
 			try {
 				datum = formatDatuma.parse(dan);
-				letovi = ra.dohvatiIcaoDolaske(icao,datum.getTime()/1000,veza);
+				letovi = ra.dohvatiIcaoDolaske(icao, datum.getTime() / 1000, veza,limit, brojStranice * limit);
 				System.out.println("USPIO PARSE");
 			} catch (ParseException e) {
 				System.out.println("EXCEPTION APRSE");
-	
+
 			}
-			
-		}else {
-			letovi = ra.dohvatiIcaoDolaske(icao,null,veza);
+
+		} else {
+			letovi = ra.dohvatiIcaoDolaske(icao, null, veza);
 		}
 
 		if (letovi != null) {

@@ -57,14 +57,19 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public List<Aerodrom> dohvatiSveAerodrome(Connection veza) {
+	public List<Aerodrom> dohvatiSveAerodrome(Connection veza, int limit, int offset) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
 			return null;
 		try {
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
+			s.setInt(1, limit);
+			s.setInt(2, offset);
 			ResultSet rs = s.executeQuery();
+			
+
 			while (rs.next()) {
 				String icao = rs.getString("ident");
 				String naziv = rs.getString("name");
@@ -120,13 +125,49 @@ public class RepozitorijAerodromi {
 
 	}
 
-	public List<Aerodrom> dohvatiAerodromePracene(Connection veza) {
+	public List<Aerodrom> dohvatiAerodromePracene(Connection veza, int limit, int offset) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
 		if (veza == null)
 			spoji();
 		try {
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
+			s.setInt(1, limit);
+			s.setInt(2, offset);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String icao = rs.getString("ident");
+				String naziv = rs.getString("name");
+				String drzava = rs.getString("iso_country");
+				String coordinates = rs.getString("coordinates");
+				Lokacija lokacija = null;
+				try {
+					lokacija = new Lokacija(coordinates.split(",")[0].trim(), coordinates.split(",")[1].trim());
+				} catch (ArrayIndexOutOfBoundsException e) {
+					lokacija = new Lokacija("null", "null");
+				}
+				aerodromi.add(new Aerodrom(icao, naziv, drzava, lokacija));
+			}
+			rs.close();
+			return aerodromi;
+		} catch (SQLException e) {
+			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);
+
+			return null;
+		}
+
+	}
+	
+	public List<Aerodrom> dohvatiSveAerodromePracene(Connection veza) {
+		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
+		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
+		if (veza == null)
+			spoji();
+		try {
+
+			PreparedStatement s = veza.prepareStatement(upit);
+		
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String icao = rs.getString("ident");
@@ -195,7 +236,7 @@ public class RepozitorijAerodromi {
 		return false;
 	}
 
-	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza/*, int limit, int offset*/) {
+	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ESTDEPARTUREAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
@@ -206,17 +247,17 @@ public class RepozitorijAerodromi {
 				upit += " AND ap.FIRSTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
-			//upit+=" LIMIT ? OFFSET ?";
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
 				
-//				s.setInt(4, limit);
-//				s.setInt(5, offset);
-//			} else {
-//				s.setInt(2, limit);
-//				s.setInt(3, offset);
+				s.setInt(4, limit);
+				s.setInt(5, offset);
+			} else {
+				s.setInt(2, limit);
+				s.setInt(3, offset);
 			}
 			s.setString(1, icao);
 				
@@ -249,7 +290,7 @@ public class RepozitorijAerodromi {
 		}
 	}
 
-	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza/*, int limit, int offset*/) {
+	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ? ";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
 		if (veza == null)
@@ -260,17 +301,17 @@ public class RepozitorijAerodromi {
 				upit += " AND ad.LASTSEEN BETWEEN ? AND ?+86400";
 				System.out.println("dodani upit " + vrijeme);
 			}
-			//upit+=" LIMIT ? OFFSET ?";
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
 				
-//				s.setInt(4, limit);
-//				s.setInt(5, offset);
-//			} else {
-//				s.setInt(2, limit);
-//				s.setInt(3, offset);
+				s.setInt(4, limit);
+				s.setInt(5, offset);
+			} else {
+				s.setInt(2, limit);
+				s.setInt(3, offset);
 			}
 			s.setString(1, icao);
 

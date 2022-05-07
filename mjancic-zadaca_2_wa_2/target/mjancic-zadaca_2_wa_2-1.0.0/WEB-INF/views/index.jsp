@@ -10,10 +10,10 @@
 	<h1>Zadaća 2</h1>
 	<ul>
 		<li><a
-			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledSvihAerodroma">Pregled
+			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledSvihAerodroma?str=0">Pregled
 				svih aerodroma</a></li>
 		<li><a
-			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledPracenihAerodroma">Pregled
+			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledPracenihAerodroma?str=0">Pregled
 				praćenih aerodroma</a></li>
 		<li><a
 			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledAerodroma">Pregled
