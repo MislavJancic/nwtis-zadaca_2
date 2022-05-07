@@ -95,6 +95,8 @@ public class PregledAerodroma {
 		AerodromiKlijent ak = new AerodromiKlijent(context);
 		List<AvionLeti> a = ak.dajPolaske(icao, dan, brojStranice);
 		model.put("brojStranice", brojStranice);
+		model.put("dan", dan);
+		model.put("icao", icao);
 		model.put("polasci", a);
 	}
 
@@ -106,7 +108,24 @@ public class PregledAerodroma {
 		AerodromiKlijent ak = new AerodromiKlijent(context);
 		List<AvionLeti> a = ak.dajDolaske(icao, dan, brojStranice);
 		model.put("brojStranice", brojStranice);
+		model.put("dan", dan);
+		model.put("icao", icao);
 		model.put("dolasci", a);
+	}
+	
+	@GET
+	@Path("dodajAerodromZaPracenje")
+	@View("dodajAerodromZaPracenje.jsp")
+	public void dodajAerodromZaPracenje() {
+		
+	}
+	@GET
+	@Path("dodajAerodrom")
+	@View("index.jsp")
+	public void dodajAerodrom(@QueryParam("icao") String icao) {
+		AerodromiKlijent ak = new AerodromiKlijent(context);
+		ak.dodajAerodromZaPracenje(icao);
+		
 	}
 
 }

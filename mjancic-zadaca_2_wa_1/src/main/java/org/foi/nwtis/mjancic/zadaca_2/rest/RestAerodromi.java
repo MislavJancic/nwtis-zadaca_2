@@ -5,21 +5,16 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.foi.nwtis.mjancic.zadaca_2.podaci.JsonIcao;
 import org.foi.nwtis.mjancic.zadaca_2.podaci.RepozitorijAerodromi;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.podaci.AvionLeti;
-import org.foi.nwtis.rest.podaci.Lokacija;
 
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -163,7 +158,7 @@ public class RestAerodromi {
 			}
 
 		} else {
-			letovi = ra.dohvatiIcaoPolaske(icao, null, veza);
+			letovi = ra.dohvatiIcaoPolaske(icao, null, veza, limit, brojStranice * limit);
 		}
 
 		if (letovi != null) {
@@ -204,7 +199,7 @@ public class RestAerodromi {
 			System.out.println("DAN " + dan);
 			try {
 				datum = formatDatuma.parse(dan);
-				letovi = ra.dohvatiIcaoDolaske(icao, datum.getTime() / 1000, veza,limit, brojStranice * limit);
+				letovi = ra.dohvatiIcaoDolaske(icao, datum.getTime() / 1000, veza, limit, brojStranice * limit);
 				System.out.println("USPIO PARSE");
 			} catch (ParseException e) {
 				System.out.println("EXCEPTION APRSE");
@@ -212,7 +207,7 @@ public class RestAerodromi {
 			}
 
 		} else {
-			letovi = ra.dohvatiIcaoDolaske(icao, null, veza);
+			letovi = ra.dohvatiIcaoDolaske(icao, null, veza, limit, brojStranice * limit);
 		}
 
 		if (letovi != null) {

@@ -35,6 +35,7 @@ public class KonfiguracijaTXT extends KonfiguracijaApstraktna {
 	@Override
 	public void spremiKonfiguraciju(String nazivDatoteke) throws NeispravnaKonfiguracija {
 		File datoteka = new File(nazivDatoteke);
+		System.out.println("ABS PATH "+datoteka.getAbsolutePath());
 		String tip = Konfiguracija.dajTipKonfiguracije(nazivDatoteke);
 		
 		if(tip == null || tip.compareTo(TIP) != 0 ) {

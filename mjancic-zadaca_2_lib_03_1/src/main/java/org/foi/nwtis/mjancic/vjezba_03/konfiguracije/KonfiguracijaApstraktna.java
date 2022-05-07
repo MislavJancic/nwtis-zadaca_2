@@ -16,7 +16,7 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
 	protected String nazivDatoteke;
 
 	/** kolekcija postavki. */
-	protected Properties postavke;
+	public Properties postavke;
 
 	/**
 	 * Konstruktor klase.

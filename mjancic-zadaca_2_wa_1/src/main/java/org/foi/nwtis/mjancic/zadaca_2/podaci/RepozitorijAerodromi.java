@@ -204,7 +204,7 @@ public class RepozitorijAerodromi {
 			s.setString(1, icao);
 			int r = s.executeUpdate();
 
-			return true ? r > 0 : false;
+			return (true ? r > 0 : false);
 
 		} catch (SQLException e) {
 			Logger.getLogger(RepozitorijAerodromi.class.getName()).log(Level.SEVERE, null, e);

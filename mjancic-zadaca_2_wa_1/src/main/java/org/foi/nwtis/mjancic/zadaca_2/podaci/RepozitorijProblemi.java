@@ -56,13 +56,16 @@ public class RepozitorijProblemi {
 		}
 	}
 
-	public List<Problem> dohvatiProblemZaIcao(String icao, Connection veza) {
+	public List<Problem> dohvatiProblemZaIcao(String icao, Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM AERODROMI_PROBLEMI ap WHERE ap.IDENT  = ?";
 		List<Problem> problemi = new ArrayList<Problem>();
 		if (veza == null)
 			return null;
 		try {
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
+			s.setInt(2, limit);
+			s.setInt(3, offset);
 			s.setString(1, icao);
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -101,13 +104,16 @@ public class RepozitorijProblemi {
 		}
 	}
 
-	public List<Problem> dohvatiProbleme(String icao, Connection veza) {
+	public List<Problem> dohvatiProbleme(Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM AERODROMI_PROBLEMI";
 		List<Problem> problemi = new ArrayList<Problem>();
 		if (veza == null)
 			return null;
 		try {
+			upit+=" LIMIT ? OFFSET ?";
 			PreparedStatement s = veza.prepareStatement(upit);
+			s.setInt(1, limit);
+			s.setInt(2, offset);
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String ident = rs.getString("ident");

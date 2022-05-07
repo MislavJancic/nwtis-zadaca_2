@@ -2,6 +2,9 @@ package org.foi.nwtis.mjancic.zadaca_2.slusaci;
 
 import java.io.File;
 
+import org.foi.nwtis.mjancic.vjezba_03.konfiguracije.KonfiguracijaBIN;
+import org.foi.nwtis.mjancic.vjezba_03.konfiguracije.KonfiguracijaJSON;
+import org.foi.nwtis.mjancic.vjezba_03.konfiguracije.KonfiguracijaTXT;
 import org.foi.nwtis.mjancic.vjezba_03.konfiguracije.NeispravnaKonfiguracija;
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.KonfiguracijaBP;
 import org.foi.nwtis.mjancic.vjezba_06.konfiguracije.bazaPodataka.PostavkeBazaPodataka;
@@ -40,6 +43,22 @@ public class SlusacAplikacije implements ServletContextListener {
 			e.printStackTrace();
 			return;
 		}
+    	
+    	KonfiguracijaBIN kb = new KonfiguracijaBIN("NWTiS.db.config_2.bin");
+    	
+//    	try {
+//    		kb.postavke = konfig.dajSvePostavke();
+//			kb.spremiKonfiguraciju();
+//			KonfiguracijaTXT kt = new KonfiguracijaTXT("NWTiS.db.config_2.txt");
+//	    	kt.postavke = konfig.dajSvePostavke();
+//	    	kt.spremiKonfiguraciju();
+//	    	KonfiguracijaJSON kj = new KonfiguracijaJSON("NWTiS.db.config_2.json");
+//	    	kj.postavke = konfig.dajSvePostavke();
+//	    	kj.spremiKonfiguraciju();
+//		} catch (NeispravnaKonfiguracija e) {
+//			e.printStackTrace();
+//		}
+    
     	
     	context.setAttribute("postavke", konfig);
     	RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu((PostavkeBazaPodataka) konfig);
