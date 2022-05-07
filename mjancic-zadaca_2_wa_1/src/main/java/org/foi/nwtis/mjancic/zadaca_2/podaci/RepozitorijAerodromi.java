@@ -15,15 +15,32 @@ import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.rest.podaci.AvionLeti;
 import org.foi.nwtis.rest.podaci.Lokacija;
 
+
+/**
+ * Klasa RepozitorijAerodromi koja služi kao posrednik za rad s bazom podataka.
+ */
 public class RepozitorijAerodromi {
 
+	/** The instanca. */
 	private static RepozitorijAerodromi instanca = null;
 
+	/** The pbp. */
 	private PostavkeBazaPodataka pbp = null;
+	
+	/** The url. */
 	private String url = null;
+	
+	/** The username. */
 	private String username = null;
+	
+	/** The lozinka. */
 	private String lozinka = null;
 
+	/**
+	 * Instancira novi repozitorij aerodromi.
+	 *
+	 * @param postavkeBazaPodataka postavke baza podataka
+	 */
 	private RepozitorijAerodromi(PostavkeBazaPodataka postavkeBazaPodataka) {
 		pbp = postavkeBazaPodataka;
 		username = pbp.getUserUsername();
@@ -37,10 +54,21 @@ public class RepozitorijAerodromi {
 		}
 	}
 
+	/**
+	 * Dohvati instancu.
+	 *
+	 * @return the repozitorij aerodromi
+	 */
 	public static RepozitorijAerodromi dohvatiInstancu() {
 		return instanca;
 	}
 
+	/**
+	 * Dohvati instancu.
+	 *
+	 * @param postavkeBazaPodataka the postavke baza podataka
+	 * @return the repozitorij aerodromi
+	 */
 	public static RepozitorijAerodromi dohvatiInstancu(PostavkeBazaPodataka postavkeBazaPodataka) {
 		if (instanca == null) {
 			instanca = new RepozitorijAerodromi(postavkeBazaPodataka);
@@ -48,6 +76,11 @@ public class RepozitorijAerodromi {
 		return instanca;
 	}
 
+	/**
+	 * Spoji.
+	 *
+	 * @return veza na bazu
+	 */
 	public Connection spoji() {
 		try {
 			Connection veza = DriverManager.getConnection(url, username, lozinka);
@@ -57,6 +90,14 @@ public class RepozitorijAerodromi {
 		}
 	}
 
+	/**
+	 * Dohvati sve aerodrome.
+	 *
+	 * @param veza  veza
+	 * @param limit  limit
+	 * @param offset  offset
+	 * @return  lista aerodroma
+	 */
 	public List<Aerodrom> dohvatiSveAerodrome(Connection veza, int limit, int offset) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
@@ -64,7 +105,7 @@ public class RepozitorijAerodromi {
 			return null;
 		try {
 			upit+=" LIMIT ? OFFSET ?";
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 			s.setInt(1, limit);
 			s.setInt(2, offset);
 			ResultSet rs = s.executeQuery();
@@ -92,6 +133,13 @@ public class RepozitorijAerodromi {
 
 	}
 
+	/**
+	 * Dohvati aerodrom.
+	 *
+	 * @param icao  icao
+	 * @param veza  veza
+	 * @return aerodrom
+	 */
 	public Aerodrom dohvatiAerodrom(String icao, Connection veza) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a WHERE ident = ?";
 		if (veza == null)
@@ -99,7 +147,7 @@ public class RepozitorijAerodromi {
 		PreparedStatement s;
 		Aerodrom aerodrom = null;
 		try {
-			s = veza.prepareStatement(upit);
+			s = veza.prepareStatement(sqlKonverzija(upit));
 			s.setString(1, icao);
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -125,6 +173,14 @@ public class RepozitorijAerodromi {
 
 	}
 
+	/**
+	 * Dohvati aerodrome pracene.
+	 *
+	 * @param veza  veza
+	 * @param limit limit
+	 * @param offset offset
+	 * @return lista aerodroma
+	 */
 	public List<Aerodrom> dohvatiAerodromePracene(Connection veza, int limit, int offset) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
@@ -132,7 +188,7 @@ public class RepozitorijAerodromi {
 			spoji();
 		try {
 			upit+=" LIMIT ? OFFSET ?";
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 			s.setInt(1, limit);
 			s.setInt(2, offset);
 			ResultSet rs = s.executeQuery();
@@ -159,6 +215,12 @@ public class RepozitorijAerodromi {
 
 	}
 	
+	/**
+	 * Dohvati sve aerodrome pracene.
+	 *
+	 * @param veza veza
+	 * @return  lista aerodroma
+	 */
 	public List<Aerodrom> dohvatiSveAerodromePracene(Connection veza) {
 		String upit = "SELECT a.IDENT ,a.NAME ,a.ISO_COUNTRY ,a.COORDINATES FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		List<Aerodrom> aerodromi = new ArrayList<Aerodrom>();
@@ -166,7 +228,7 @@ public class RepozitorijAerodromi {
 			spoji();
 		try {
 
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 		
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -192,6 +254,13 @@ public class RepozitorijAerodromi {
 
 	}
 
+	/**
+	 * Dodaj aerodrom za pratiti.
+	 *
+	 * @param icao icao
+	 * @param veza veza
+	 * @return true, kad uspije
+	 */
 	public boolean dodajAerodromZaPratiti(String icao, Connection veza) {
 		if (provjeriPostojanjeIcaoZaPratiti(icao, veza))
 			return false;
@@ -200,7 +269,7 @@ public class RepozitorijAerodromi {
 			return false;
 		PreparedStatement s;
 		try {
-			s = veza.prepareStatement(upit);
+			s = veza.prepareStatement(sqlKonverzija(upit));
 			s.setString(1, icao);
 			int r = s.executeUpdate();
 
@@ -213,12 +282,19 @@ public class RepozitorijAerodromi {
 		}
 	}
 
+	/**
+	 * Provjeri postojanje icao za pratiti.
+	 *
+	 * @param icao icao
+	 * @param veza veza
+	 * @return true, ako uspije
+	 */
 	private boolean provjeriPostojanjeIcaoZaPratiti(String icao, Connection veza) {
 		String upit = "SELECT a.IDENT FROM airports a, AERODROMI_PRACENI ap WHERE a.ident=ap.ident";
 		if (veza == null)
 			return false;
 		try {
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String ident = rs.getString("ident");
@@ -236,6 +312,16 @@ public class RepozitorijAerodromi {
 		return false;
 	}
 
+	/**
+	 * Dohvati icao polaske.
+	 *
+	 * @param icao icao
+	 * @param vrijeme vrijeme
+	 * @param veza veza
+	 * @param limit limit
+	 * @param offset offset
+	 * @return lista letova
+	 */
 	public List<AvionLeti> dohvatiIcaoPolaske(String icao, Long vrijeme, Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM  AERODROMI_POLASCI ap WHERE ESTDEPARTUREAIRPORT = ?";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
@@ -248,7 +334,7 @@ public class RepozitorijAerodromi {
 				System.out.println("dodani upit " + vrijeme);
 			}
 			upit+=" LIMIT ? OFFSET ?";
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
@@ -290,6 +376,16 @@ public class RepozitorijAerodromi {
 		}
 	}
 
+	/**
+	 * Dohvati icao dolaske.
+	 *
+	 * @param icao icao
+	 * @param vrijeme vrijeme
+	 * @param veza veza
+	 * @param limit limit
+	 * @param offset offset
+	 * @return lista letova
+	 */
 	public List<AvionLeti> dohvatiIcaoDolaske(String icao, Long vrijeme, Connection veza, int limit, int offset) {
 		String upit = "SELECT * FROM  AERODROMI_DOLASCI ad WHERE ESTARRIVALAIRPORT = ? ";
 		List<AvionLeti> avioniLete = new ArrayList<AvionLeti>();
@@ -302,7 +398,7 @@ public class RepozitorijAerodromi {
 				System.out.println("dodani upit " + vrijeme);
 			}
 			upit+=" LIMIT ? OFFSET ?";
-			PreparedStatement s = veza.prepareStatement(upit);
+			PreparedStatement s = veza.prepareStatement(sqlKonverzija(upit));
 			if (vrijeme != null) {
 				s.setLong(2, vrijeme);
 				s.setLong(3, vrijeme);
@@ -343,6 +439,13 @@ public class RepozitorijAerodromi {
 		}
 	}
 
+	/**
+	 * Spremi polaske.
+	 *
+	 * @param letovi letovi
+	 * @param veza veza
+	 * @return true, ako uspije
+	 */
 	public boolean spremiPolaske(List<AvionLeti> letovi, Connection veza) {
 		String upit = "INSERT  INTO AERODROMI_POLASCI (\n" + "ICAO24 ,\n" + "FIRSTSEEN,\n" + "ESTDEPARTUREAIRPORT,\n"
 				+ "LASTSEEN,\n" + "ESTARRIVALAIRPORT,\n" + "CALLSIGN,\n" + "ESTDEPARTUREAIRPORTHORIZDISTANCE,\n"
@@ -358,7 +461,7 @@ public class RepozitorijAerodromi {
 		for (AvionLeti al : letovi) {
 			try {
 				if (al.getEstArrivalAirport() != null) {
-					s = veza.prepareStatement(upit);
+					s = veza.prepareStatement(sqlKonverzija(upit));
 					s.setString(1, al.getIcao24());
 					s.setInt(2, al.getFirstSeen());
 					s.setString(3, al.getEstDepartureAirport());
@@ -382,6 +485,13 @@ public class RepozitorijAerodromi {
 
 	}
 
+	/**
+	 * Spremi dolaske.
+	 *
+	 * @param letovi letovi
+	 * @param veza  veza
+	 * @return true, ako uspije
+	 */
 	public boolean spremiDolaske(List<AvionLeti> letovi, Connection veza) {
 		String upit = "INSERT INTO AERODROMI_DOLASCI (\n" + "ICAO24,\n" + "FIRSTSEEN,\n" + "ESTDEPARTUREAIRPORT,\n"
 				+ "LASTSEEN,\n" + "ESTARRIVALAIRPORT,\n" + "CALLSIGN,\n" + "ESTDEPARTUREAIRPORTHORIZDISTANCE,\n"
@@ -397,7 +507,7 @@ public class RepozitorijAerodromi {
 		for (AvionLeti al : letovi) {
 			try {
 				if (al.getEstDepartureAirport() != null) {
-					s = veza.prepareStatement(upit);
+					s = veza.prepareStatement(sqlKonverzija(upit));
 					s.setString(1, al.getIcao24());
 					s.setInt(2, al.getFirstSeen());
 					s.setString(3, al.getEstDepartureAirport());
@@ -421,13 +531,20 @@ public class RepozitorijAerodromi {
 
 	}
 
+	/**
+	 * Spremi problem.
+	 *
+	 * @param problem problem
+	 * @param veza veza
+	 * @return true, ako uspije
+	 */
 	public boolean spremiProblem(Problem problem, Connection veza) {
 		String upit = "INSERT INTO AERODROMI_PROBLEMI (IDENT,DESCRIPTION , STORED) VALUES (?,? ,NOW())";
 		if (veza == null)
 			return false;
 		PreparedStatement s;
 		try {
-			s = veza.prepareStatement(upit);
+			s = veza.prepareStatement(sqlKonverzija(upit));
 			s.setString(1, problem.ident);
 			s.setString(2, problem.description);
 			int r = s.executeUpdate();
@@ -439,6 +556,30 @@ public class RepozitorijAerodromi {
 
 			return false;
 		}
+	}
+	
+	/**
+	 * Sql konverzija za slučaj korištenja MySQL zbog naziva atributa tablica "STORED" koji je keyword u MySQL-u.
+	 *
+	 * @param upit upit
+	 * @return provjereni ili popravljeni upit
+	 */
+	private String sqlKonverzija(String upit) {
+		String vrati="";
+		if(url.toLowerCase().contains("mysql")) {
+			if(upit.contains("stored")) {
+				vrati=upit.replaceAll("stored", "`stored`");
+			}
+			if(upit.contains("STORED")) {
+				vrati=upit.replaceAll("STORED", "`STORED`");
+			}
+		}else {
+			vrati = upit;
+		}
+		System.out.println("DB URL "+url);
+		System.out.println("UPIT KONVERT:"+vrati);
+		
+		return vrati;
 	}
 
 }

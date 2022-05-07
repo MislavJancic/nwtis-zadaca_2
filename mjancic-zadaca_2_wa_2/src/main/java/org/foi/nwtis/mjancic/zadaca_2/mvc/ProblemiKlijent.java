@@ -18,15 +18,30 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Klasa ProblemiKlijent.
+ */
 public class ProblemiKlijent {
 
+	/**  konfig. */
 	Konfiguracija konfig;
 
+	/**
+	 * Instancira novi problemi klijent.
+	 *
+	 * @param context the context
+	 */
 	public ProblemiKlijent(ServletContext context) {
 
 		konfig = (Konfiguracija) context.getAttribute("postavke");
 	}
 
+	/**
+	 * Dohvati probleme.
+	 *
+	 * @param brojStranice  broj stranice
+	 * @return lista problema
+	 */
 	public List<Problem> dohvatiProbleme(String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/problemi")
@@ -44,6 +59,13 @@ public class ProblemiKlijent {
 		return problemi;
 	}
 	
+	/**
+	 * Dohvati probleme za icao.
+	 *
+	 * @param icao icao
+	 * @param brojStranice broj stranice
+	 * @return lista problema
+	 */
 	public List<Problem> dohvatiProblemeZaIcao(String icao, String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/problemi/"+icao)
@@ -60,6 +82,12 @@ public class ProblemiKlijent {
 		return problemi;
 	}
 	
+	/**
+	 * Obrisi probleme za icao.
+	 *
+	 * @param icao icao
+	 * @return true, ako uspije
+	 */
 	public boolean obrisiProblemeZaIcao(String icao) {
 		if(icao==null) return false;
 		if (icao.length() < 2)

@@ -86,7 +86,10 @@ public class PreuzimanjeRasporedaAerodroma extends Thread {
 			for (Aerodrom a : aerodromi) {
 				obradiPolaske(a);
 				obradiDolaske(a);
-				// TODO mala pauza
+				try {
+					sleep(20);
+				} catch (InterruptedException e) {
+				}
 			}
 			// TODO onaj cijeli izračun za vrijeme spavanja
 			long korekcija = 0;

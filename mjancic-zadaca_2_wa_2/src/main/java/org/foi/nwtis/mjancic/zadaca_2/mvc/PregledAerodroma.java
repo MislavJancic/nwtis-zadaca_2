@@ -21,22 +21,36 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * Klasa PregledAerodroma.
+ */
 @Controller
 @Path("aerodromi")
 @RequestScoped
 public class PregledAerodroma {
+	
+	/** context. */
 	@Context
 	ServletContext context;
 
+	/** model. */
 	@Inject
 	private Models model;
 
+	/**
+	 * Pocetak.
+	 */
 	@GET
 	@Path("pocetak")
 	@View("index.jsp")
 	public void pocetak() {
 	}
 
+	/**
+	 * Pregled svih aerodroma.
+	 *
+	 * @param brojStranice broj stranice
+	 */
 	@GET
 	@Path("pregledSvihAerodroma")
 	@View("pregledSvihAerodroma.jsp")
@@ -47,6 +61,9 @@ public class PregledAerodroma {
 		model.put("aerodromi", a);
 	}
 
+	/**
+	 * Pregled aerodroma.
+	 */
 	@GET
 	@Path("pregledAerodroma")
 	@View("upisAerodroma.jsp")
@@ -54,6 +71,11 @@ public class PregledAerodroma {
 
 	}
 
+	/**
+	 * Prikazi icao.
+	 *
+	 * @param icao  icao
+	 */
 	@POST
 	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
 	@Path("PrikaziIcao")
@@ -70,6 +92,11 @@ public class PregledAerodroma {
 		model.put("aerodrom", ai);
 	}
 
+	/**
+	 * Pregled pracenih aerodroma.
+	 *
+	 * @param brojStranice broj stranice
+	 */
 	@GET
 	@Path("pregledPracenihAerodroma")
 	@View("pregledPracenihAerodroma.jsp")
@@ -80,6 +107,11 @@ public class PregledAerodroma {
 		model.put("aerodromi", a);
 	}
 
+	/**
+	 * Opcije icao.
+	 *
+	 * @param icao icao
+	 */
 	@GET
 	@Path("opcijeIcao")
 	@View("opcijeIcao.jsp")
@@ -87,6 +119,13 @@ public class PregledAerodroma {
 		model.put("icao", icao);
 	}
 
+	/**
+	 * Avioni polasci.
+	 *
+	 * @param icao  icao
+	 * @param dan  dan
+	 * @param brojStranice broj stranice
+	 */
 	@GET
 	@Path("avioniPolasci")
 	@View("avioniPolasci.jsp")
@@ -100,6 +139,13 @@ public class PregledAerodroma {
 		model.put("polasci", a);
 	}
 
+	/**
+	 * Avioni dolasci.
+	 *
+	 * @param icao icao
+	 * @param dan  dan
+	 * @param brojStranice broj stranice
+	 */
 	@GET
 	@Path("avioniDolasci")
 	@View("avioniDolasci.jsp")
@@ -113,12 +159,21 @@ public class PregledAerodroma {
 		model.put("dolasci", a);
 	}
 	
+	/**
+	 * Dodaj aerodrom za pracenje.
+	 */
 	@GET
 	@Path("dodajAerodromZaPracenje")
 	@View("dodajAerodromZaPracenje.jsp")
 	public void dodajAerodromZaPracenje() {
 		
 	}
+	
+	/**
+	 * Dodaj aerodrom.
+	 *
+	 * @param icao icao
+	 */
 	@GET
 	@Path("dodajAerodrom")
 	@View("index.jsp")

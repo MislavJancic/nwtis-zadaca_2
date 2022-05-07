@@ -21,16 +21,33 @@ import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Klasa AerodromiKlijent.
+ */
 public class AerodromiKlijent {
 
+	/** context. */
 	private ServletContext context;
+	
+	/** konfig. */
 	Konfiguracija konfig;
 
+	/**
+	 * Instancira novi aerodromi klijent.
+	 *
+	 * @param context  context
+	 */
 	public AerodromiKlijent(ServletContext context) {
 		this.context = context;
 		konfig = (Konfiguracija) context.getAttribute("postavke");
 	}
 
+	/**
+	 * Daj pracene aerodrome.
+	 *
+	 * @param brojStranice broj stranice
+	 * @return lista aerodroma
+	 */
 	public List<Aerodrom> dajPraceneAerodrome(String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/aerodromi")
@@ -48,6 +65,12 @@ public class AerodromiKlijent {
 		return aerodromi;
 	}
 
+	/**
+	 * Daj sve aerodrome.
+	 *
+	 * @param brojStranice broj stranice
+	 * @return lista aerodroma
+	 */
 	public List<Aerodrom> dajSveAerodrome(String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/aerodromi")
@@ -64,6 +87,12 @@ public class AerodromiKlijent {
 		return aerodromi;
 	}
 
+	/**
+	 * Daj aerodrom.
+	 *
+	 * @param icao icao
+	 * @return aerodrom
+	 */
 	public Aerodrom dajAerodrom(String icao) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/aerodromi").path(icao);
@@ -80,6 +109,14 @@ public class AerodromiKlijent {
 		return a;
 	}
 
+	/**
+	 * Daj dolaske.
+	 *
+	 * @param icao icao
+	 * @param dan dan
+	 * @param brojStranice broj stranice
+	 * @return lista letova
+	 */
 	public List<AvionLeti> dajDolaske(String icao, String dan, String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/aerodromi/" + icao + "/dolasci")
@@ -97,6 +134,14 @@ public class AerodromiKlijent {
 		return letovi;
 	}
 
+	/**
+	 * Daj polaske.
+	 *
+	 * @param icao icao
+	 * @param dan dan
+	 * @param brojStranice broj stranice
+	 * @return lista letova
+	 */
 	public List<AvionLeti> dajPolaske(String icao, String dan, String brojStranice) {
 		Client client = ClientBuilder.newClient();
 		WebTarget webResource = client.target(konfig.dajPostavku("adresa.wa_1") + "/aerodromi/" + icao + "/polasci")
@@ -114,6 +159,12 @@ public class AerodromiKlijent {
 		return letovi;
 	}
 
+	/**
+	 * Dodaj aerodrom za pracenje.
+	 *
+	 * @param icao icao
+	 * @return true, ako uspije
+	 */
 	public boolean dodajAerodromZaPracenje(String icao) {
 		if(icao==null) return false;
 		if (icao.length() < 2)
@@ -127,19 +178,39 @@ public class AerodromiKlijent {
 		return false;
 	}
 
+	/**
+	 * klasa JsonIcao za JSON.
+	 */
 	@XmlRootElement
 	public class JsonIcao {
+		
+		/** icao. */
 		@XmlElement
 		public String icao;
 
+		/**
+		 * Instancira novi json icao.
+		 *
+		 * @param icao icao
+		 */
 		public JsonIcao(String icao) {
 			this.icao = icao;
 		}
 
+		/**
+		 * dohvaca icao.
+		 *
+		 * @return icao
+		 */
 		public String getIcao() {
 			return icao;
 		}
 
+		/**
+		 * Sets icao.
+		 *
+		 * @param icao  icao
+		 */
 		public void setIcao(String icao) {
 			this.icao = icao;
 		}

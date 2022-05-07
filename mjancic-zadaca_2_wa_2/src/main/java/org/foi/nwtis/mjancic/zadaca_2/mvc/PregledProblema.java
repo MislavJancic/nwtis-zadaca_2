@@ -16,17 +16,27 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 
+/**
+ * Klasa PregledProblema.
+ */
 @Controller
 @Path("problemi")
 @RequestScoped
 public class PregledProblema {
 	
+	/**   context. */
 	@Context
 	ServletContext context;
 
+	/**  model. */
 	@Inject
 	private Models model;
 	
+	/**
+	 * Prikaz problema.
+	 *
+	 * @param brojStranice   broj stranice
+	 */
 	@GET
 	@Path("prikazProblema")
 	@View("prikazProblema.jsp")
@@ -37,6 +47,12 @@ public class PregledProblema {
 		model.put("brojStranice",brojStranice);
 	}
 	
+	/**
+	 * Prikaz problema icao.
+	 *
+	 * @param brojStranice   broj stranice
+	 * @param icao  icao
+	 */
 	@GET
 	@Path("prikazProblemaIcao")
 	@View("prikazProblemaIcao.jsp")
@@ -48,6 +64,9 @@ public class PregledProblema {
 		model.put("icao", icao);
 	}
 	
+	/**
+	 * Prikaz problema icao.
+	 */
 	@GET
 	@Path("upisiIcaoZaProbleme")
 	@View("upisiIcaoZaProbleme.jsp")
@@ -55,6 +74,9 @@ public class PregledProblema {
 		
 	}
 	
+	/**
+	 * Obrisi probleme za icao.
+	 */
 	@GET
 	@Path("obrisiProblemeZaIcao")
 	@View("obrisiProblemeZaIcao.jsp")
@@ -62,6 +84,11 @@ public class PregledProblema {
 		
 	}
 	
+	/**
+	 * Obrisi probleme.
+	 *
+	 * @param icao  icao
+	 */
 	@GET
 	@Path("obrisiProbleme")
 	@View("index.jsp")

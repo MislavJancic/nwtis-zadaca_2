@@ -11,14 +11,26 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+
+/**
+ * The Class SlusacAplikacije.
+ */
 @WebListener
 public class SlusacAplikacije implements ServletContextListener {
 
 
+    /**
+     * Instancira a new slusac aplikacije.
+     */
     public SlusacAplikacije() {
        
     }
 
+    /**
+     * Context inicijaliziran.
+     *
+     * @param sce  servletContextEvent
+     */
     @Override
 	public void contextInitialized(ServletContextEvent sce) {
     	ServletContext context = sce.getServletContext();
@@ -44,6 +56,11 @@ public class SlusacAplikacije implements ServletContextListener {
 		ServletContextListener.super.contextInitialized(sce);
 	}
     
+	/**
+	 * Context uništen.
+	 *
+	 * @param sce  servletContextEvent
+	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		ServletContext context = sce.getServletContext();

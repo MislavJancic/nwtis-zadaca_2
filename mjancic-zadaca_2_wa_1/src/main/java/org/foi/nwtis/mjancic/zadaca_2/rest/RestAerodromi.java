@@ -25,29 +25,40 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Klasa RestAerodromi.
+ */
 @Path("aerodromi")
 public class RestAerodromi {
 
+	/**
+	 * Daj sve aerodrome.
+	 *
+	 * @param rq request context
+	 * @param str stranica
+	 * @param br broj podataka
+	 * @return odgovor
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dajSveAerodrome(@Context HttpServletRequest rq, @QueryParam("str") String str,
 			@QueryParam("br") String br) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		Response odgovor = null;
-
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
 		int brojStranice = 0;
 		int limit = 0;
+		List<Aerodrom> aerodromi;
 		if (str != null && br != null) {
 			brojStranice = Integer.parseInt(str);
 			limit = Integer.parseInt(br);
+
 		}
 		if (rq.getParameter("preuzimanje") != null) {
 			return dajAerodromeZaPratiti(brojStranice, limit);
 		}
-		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		// ra.spoji();
+		aerodromi = ra.dohvatiSveAerodrome(veza, limit, brojStranice * limit);
 		System.out.println("LIMIT " + limit + " OFFSET " + brojStranice * limit);
-		List<Aerodrom> aerodromi = ra.dohvatiSveAerodrome(veza, limit, brojStranice * limit);
 
 		if (aerodromi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(aerodromi).build();
@@ -62,6 +73,12 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	/**
+	 * Dodaj aerodrom za pratiti.
+	 *
+	 * @param icao icao
+	 * @return response
+	 */
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -84,6 +101,12 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	/**
+	 * Daj aerodrom.
+	 *
+	 * @param icao the icao
+	 * @return the response
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}")
@@ -107,6 +130,13 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	/**
+	 * Daj aerodrome za pratiti.
+	 *
+	 * @param brojStranice  broj stranice
+	 * @param limit  limit
+	 * @return response
+	 */
 	public Response dajAerodromeZaPratiti(int brojStranice, int limit) {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		Response odgovor = null;
@@ -127,6 +157,15 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	/**
+	 * Daj polaske aerodoma.
+	 *
+	 * @param icao icao
+	 * @param dan dan (datum dd.MM.yyyy)
+	 * @param str stranica
+	 * @param br broj podataka po stranici
+	 * @return response
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/polasci")
@@ -135,31 +174,18 @@ public class RestAerodromi {
 		Connection veza = RepozitorijAerodromi.dohvatiInstancu().spoji();
 		int brojStranice = 0;
 		int limit = 0;
+		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
+		List<AvionLeti> letovi = null;
 		if (str != null && br != null) {
 			brojStranice = Integer.parseInt(str);
 			limit = Integer.parseInt(br);
+			letovi = dajPolaskeExtracted(icao, dan, veza, brojStranice, limit, ra, letovi);
+		} else {
+			letovi = dajPolaskeExtracted(icao, dan, veza, 0, 0, ra, letovi);
 		}
 		System.out.println("ICAO POLASCI: " + icao);
-		List<AvionLeti> letovi = null;
+
 		Response odgovor = null;
-		DateFormat formatDatuma = new SimpleDateFormat("dd.MM.yyyy");
-		Date datum;
-		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
-		if (dan != null) {
-
-			System.out.println("DAN " + dan);
-			try {
-				datum = formatDatuma.parse(dan);
-				letovi = ra.dohvatiIcaoPolaske(icao, datum.getTime() / 1000, veza, limit, brojStranice * limit);
-				System.out.println("USPIO PARSE");
-			} catch (ParseException e) {
-				System.out.println("EXCEPTION APRSE");
-
-			}
-
-		} else {
-			letovi = ra.dohvatiIcaoPolaske(icao, null, veza, limit, brojStranice * limit);
-		}
 
 		if (letovi != null) {
 			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
@@ -176,6 +202,50 @@ public class RestAerodromi {
 		return odgovor;
 	}
 
+	/**
+	 * Daj polaske extracted.
+	 *
+	 * @param icao icao
+	 * @param dan dan
+	 * @param veza veza
+	 * @param brojStranice broj stranice
+	 * @param limit limit
+	 * @param ra repozitorij aerodroma
+	 * @param letovi letovi
+	 * @return list
+	 */
+	private List<AvionLeti> dajPolaskeExtracted(String icao, String dan, Connection veza, int brojStranice, int limit,
+			RepozitorijAerodromi ra, List<AvionLeti> letovi) {
+		DateFormat formatDatuma = new SimpleDateFormat("dd.MM.yyyy");
+		Date datum;
+
+		if (dan != null) {
+
+			System.out.println("DAN " + dan);
+			try {
+				datum = formatDatuma.parse(dan);
+				letovi = ra.dohvatiIcaoPolaske(icao, datum.getTime() / 1000, veza, limit, brojStranice * limit);
+				System.out.println("USPIO PARSE");
+			} catch (ParseException e) {
+				System.out.println("EXCEPTION APRSE");
+
+			}
+
+		} else {
+			letovi = ra.dohvatiIcaoPolaske(icao, null, veza, limit, brojStranice * limit);
+		}
+		return letovi;
+	}
+
+	/**
+	 * Daj dolaske aerodoma.
+	 *
+	 * @param icao icao
+	 * @param dan dan
+	 * @param str stranica
+	 * @param br broj podataka po stranici
+	 * @return response
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}/dolasci")
@@ -191,6 +261,35 @@ public class RestAerodromi {
 		System.out.println("ICAO DOLASCI: " + icao);
 		List<AvionLeti> letovi = null;
 		Response odgovor = null;
+		letovi = dohvatiIcaoDolaskeExtracted(icao, dan, veza, brojStranice, limit, letovi);
+
+		if (letovi != null) {
+			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
+
+		} else {
+			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema dolazaka.").build();
+		}
+		try {
+			veza.close();
+		} catch (SQLException | NullPointerException e) {
+			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
+		}
+		return odgovor;
+	}
+
+	/**
+	 * Dohvati icao dolaske refaktorirano.
+	 *
+	 * @param icao icao
+	 * @param dan dan
+	 * @param veza veza
+	 * @param brojStranice broj stranice
+	 * @param limit limit
+	 * @param letovi letovi
+	 * @return lista letova
+	 */
+	private List<AvionLeti> dohvatiIcaoDolaskeExtracted(String icao, String dan, Connection veza, int brojStranice,
+			int limit, List<AvionLeti> letovi) {
 		DateFormat formatDatuma = new SimpleDateFormat("dd.MM.yyyy");
 		Date datum;
 		RepozitorijAerodromi ra = RepozitorijAerodromi.dohvatiInstancu();
@@ -209,19 +308,7 @@ public class RestAerodromi {
 		} else {
 			letovi = ra.dohvatiIcaoDolaske(icao, null, veza, limit, brojStranice * limit);
 		}
-
-		if (letovi != null) {
-			odgovor = Response.status(Response.Status.OK).entity(letovi).build();
-
-		} else {
-			odgovor = Response.status(Response.Status.NO_CONTENT).entity("Nema dolazaka.").build();
-		}
-		try {
-			veza.close();
-		} catch (SQLException | NullPointerException e) {
-			odgovor = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Greška kod rada s bazom.").build();
-		}
-		return odgovor;
+		return letovi;
 	}
 
 }

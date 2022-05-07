@@ -15,9 +15,20 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * Klasa RestProblemi.
+ */
 @Path("problemi")
 public class RestProblemi {
 
+	/**
+	 * Daj probleme aerodroma.
+	 *
+	 * @param icao icao
+	 * @param str stranica
+	 * @param br broj
+	 * @return response
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}")
@@ -47,6 +58,14 @@ public class RestProblemi {
 		return odgovor;
 	}
 
+	/**
+	 * Daj probleme.
+	 *
+	 * @param icao icao
+	 * @param str stranica
+	 * @param br broj podataka po stranici
+	 * @return response
+	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response dajProbleme(@PathParam("icao") String icao, @QueryParam("str") String str,
@@ -75,6 +94,12 @@ public class RestProblemi {
 		return odgovor;
 	}
 
+	/**
+	 * Obrisi probleme za icao.
+	 *
+	 * @param icao icao
+	 * @return  response
+	 */
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Path("{icao}")
