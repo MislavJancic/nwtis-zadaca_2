@@ -19,14 +19,19 @@
 			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledAerodroma">Pregled
 				jednog aerodroma</a></li>
 		<li><a
-			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledPolazakaAerodroma">Pregled
-				polazaka s aerodroma</a></li>
-		<li><a
-			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/pregledOdlazakaAerodroma">Pregled
-				odlazaka s aerodroma</a></li>
-		<li><a
-			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/dodajAerodrom">Dodaj
+			href="${pageContext.servletContext.contextPath}/mvc/aerodromi/dodajAerodromZaPracenje">Dodaj
 				aerodrom</a></li>
+
+		<li><a
+			href="${pageContext.servletContext.contextPath}/mvc/problemi/prikazProblema?str=0">Prikaz
+				svih problema </a></li>
+		<li><a
+			href="${pageContext.servletContext.contextPath}/mvc/problemi/upisiIcaoZaProbleme">Prikaz
+				svih problema za ICAO </a></li>
+				<li><a
+			href="${pageContext.servletContext.contextPath}/mvc/problemi/obrisiProblemeZaIcao">Brisanje
+				svih problema za ICAO </a></li>
 	</ul>
 </body>
 </html>
+

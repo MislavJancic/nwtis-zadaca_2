@@ -1,4 +1,8 @@
+org/foi/nwtis/mjancic/zadaca_2/podaci/Problem.class
+org/foi/nwtis/mjancic/zadaca_2/mvc/MVC.class
+org/foi/nwtis/mjancic/zadaca_2/mvc/ProblemiKlijent.class
+org/foi/nwtis/mjancic/zadaca_2/mvc/PregledProblema.class
+org/foi/nwtis/mjancic/zadaca_2/mvc/AerodromiKlijent$JsonIcao.class
 org/foi/nwtis/mjancic/zadaca_2/mvc/PregledAerodroma.class
 org/foi/nwtis/mjancic/zadaca_2/mvc/AerodromiKlijent.class
 org/foi/nwtis/mjancic/zadaca_2/slusaci/SlusacAplikacije.class
-org/foi/nwtis/mjancic/zadaca_2/mvc/MVC.class
